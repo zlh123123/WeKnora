@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Tencent/WeKnora/internal/types"
+	secutils "github.com/Tencent/WeKnora/internal/utils"
 	"github.com/sashabaranov/go-openai"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -133,6 +134,10 @@ func TestBuildChatCompletionRequest_MCPToolsFormat(t *testing.T) {
 // 模型的 MaxTokens 自动迁移到 MaxCompletionTokens，且采样参数被剔除。
 // 见 issue #1283：Azure OpenAI 的 gpt-5 系列模型不再支持 max_tokens 字段。
 func TestBuildChatCompletionRequest_GPT5MaxCompletionTokens(t *testing.T) {
+	t.Setenv("SSRF_WHITELIST_EXTRA", "example.openai.azure.com")
+	secutils.ResetSSRFWhitelistForTest()
+	t.Cleanup(secutils.ResetSSRFWhitelistForTest)
+
 	build := func(t *testing.T, providerName, modelName string) *RemoteAPIChat {
 		t.Helper()
 		c, err := NewRemoteAPIChat(&ChatConfig{

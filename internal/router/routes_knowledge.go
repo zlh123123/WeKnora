@@ -332,3 +332,25 @@ func RegisterWikiPageRoutes(r *gin.RouterGroup, wikiHandler *handler.WikiPageHan
 		wiki.PUT("/issues/:issue_id/status", g.OwnedWikiKBOrAdmin(), g.KBAccessWrite("kb_id"), wikiHandler.UpdateIssueStatus)
 	}
 }
+
+// RegisterLearningRoutes exposes private, caller-scoped Knowledge MRI data.
+// It deliberately does not use apiKeyGroup: API-key principals are outside
+// the MVP and the global capability gate rejects them before the handler.
+func RegisterLearningRoutes(r *gin.RouterGroup, learningHandler *handler.LearningHandler, g *rbacGuards) {
+	if learningHandler == nil {
+		return
+	}
+	learning := r.Group("/knowledgebase/:kb_id/learning")
+	learning.GET("/profile", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetProfile)
+	learning.PUT("/tracking", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.SetTracking)
+	learning.DELETE("/data", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.Clear)
+	learning.GET("/concept-states", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.ListConceptStates)
+	learning.GET("/concepts/:concept_key/quiz-items", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetQuizItems)
+	learning.GET("/concepts/:concept_key/insights", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetConceptInsights)
+	learning.POST("/concepts/:concept_key/quiz-items/generate", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GenerateQuizItems)
+	learning.POST("/scans", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.StartOrResumeScan)
+	learning.GET("/scans/active", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetActiveScan)
+	learning.POST("/scans/:scan_id/complete", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.CompleteScan)
+	learning.POST("/quiz/:item_id/attempt", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.SubmitQuizAttempt)
+	r.GET("/knowledgebase/:kb_id/wiki/learning-overlay", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetLearningOverlay)
+}

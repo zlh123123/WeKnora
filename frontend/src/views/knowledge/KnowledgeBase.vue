@@ -8,6 +8,7 @@ import EmptyKnowledge from '@/components/empty-knowledge.vue';
 import ContextualGuide from '@/components/ContextualGuide.vue';
 import KBInfoPopover from '@/components/KBInfoPopover.vue';
 import KBSwitcherDropdown from '@/components/KBSwitcherDropdown.vue';
+import GraphModeSwitcherDropdown, { type GraphDisplayMode } from '@/components/GraphModeSwitcherDropdown.vue';
 import { getSessionsList, createSessions, generateSessionsTitle } from "@/api/chat/index";
 import { useMenuStore } from '@/stores/menu';
 import { useUIStore } from '@/stores/ui';
@@ -89,6 +90,15 @@ const validTabs = ['documents', 'wiki', 'graph'] as const
 type KbTab = typeof validTabs[number]
 const initTab = validTabs.includes(route.query.tab as any) ? (route.query.tab as KbTab) : 'documents'
 const activeKbTab = ref<KbTab>(initTab);
+type WikiBrowserExpose = { requestGraphDisplayMode: (mode: GraphDisplayMode) => Promise<void> }
+const wikiBrowserRef = ref<WikiBrowserExpose | null>(null)
+const graphDisplayMode = ref<GraphDisplayMode>('knowledge')
+const handleGraphDisplayModeSelect = (mode: GraphDisplayMode) => {
+  wikiBrowserRef.value?.requestGraphDisplayMode(mode)
+}
+const onGraphDisplayModeChange = (mode: GraphDisplayMode) => {
+  graphDisplayMode.value = mode
+}
 
 // Wiki 状态用于面包屑上的索引中指示。父组件自行拉取，避免依赖 WikiBrowser 挂载状态
 // （用户切到"文档" tab 时 WikiBrowser 会卸载，这里仍需持续反映后台索引进度）。
@@ -1103,6 +1113,7 @@ watch(() => kbId.value, (newKbId, oldKbId) => {
   if (newKbId === oldKbId && kbInfo.value) return;
 
   if (newKbId !== oldKbId) {
+    graphDisplayMode.value = 'knowledge';
     clearTraceAvailabilityCache();
     cardList.value = [];
     total.value = 0;
@@ -2333,9 +2344,18 @@ async function createNewSession(value: string): Promise<void> {
                   </t-tooltip>
                 </span>
                 <span class="breadcrumb-tab-sep">/</span>
-                <t-tooltip :content="$t('knowledgeEditor.wikiBrowser.tabGraphTip')" placement="bottom">
-                  <span :class="['breadcrumb-tab', { active: activeKbTab === 'graph', indexing: wikiIsIndexing }]"
-                    @click="activeKbTab = 'graph'">
+                <GraphModeSwitcherDropdown v-if="activeKbTab === 'graph'" :current="graphDisplayMode"
+                  @select="handleGraphDisplayModeSelect">
+                  <span class="breadcrumb-tab active graph-mode-breadcrumb">
+                    {{ $t('knowledgeEditor.wikiBrowser.tabGraph') }}
+                    <t-icon name="chevron-down" class="graph-mode-chevron" />
+                    <t-tooltip v-if="wikiIsIndexing" :content="wikiIndexingTip" placement="bottom">
+                      <t-loading size="small" class="breadcrumb-tab-indicator" />
+                    </t-tooltip>
+                  </span>
+                </GraphModeSwitcherDropdown>
+                <t-tooltip v-else :content="$t('knowledgeEditor.wikiBrowser.tabGraphTip')" placement="bottom">
+                  <span :class="['breadcrumb-tab', { indexing: wikiIsIndexing }]" @click="activeKbTab = 'graph'">
                     {{ $t('knowledgeEditor.wikiBrowser.tabGraph') }}
                     <t-tooltip v-if="wikiIsIndexing" :content="wikiIndexingTip" placement="bottom">
                       <t-loading size="small" class="breadcrumb-tab-indicator" />
@@ -2375,9 +2395,10 @@ async function createNewSession(value: string): Promise<void> {
 
       <!-- Wiki Browser / Graph (shown when wiki or graph tab is active) -->
       <div v-if="isWiki && (activeKbTab === 'wiki' || activeKbTab === 'graph')" class="wiki-main-area">
-        <WikiBrowser v-if="kbId" :knowledge-base-id="kbId" :view="activeKbTab === 'graph' ? 'graph' : 'browser'"
+        <WikiBrowser v-if="kbId" ref="wikiBrowserRef" :knowledge-base-id="kbId"
+          :view="activeKbTab === 'graph' ? 'graph' : 'browser'"
           :can-edit="canEdit" @open-source-doc="openSourceDoc" @status-change="onWikiStatusChange"
-          @view-graph="onViewWikiInGraph" />
+          @view-graph="onViewWikiInGraph" @graph-display-mode-change="onGraphDisplayModeChange" />
       </div>
 
       <template v-if="activeKbTab === 'documents' || !isWiki">
@@ -2808,6 +2829,19 @@ async function createNewSession(value: string): Promise<void> {
   &.indexing {
     color: var(--td-brand-color);
   }
+}
+
+.graph-mode-breadcrumb {
+  gap: 2px;
+}
+
+.graph-mode-chevron {
+  font-size: 14px;
+  transition: transform 0.12s ease;
+}
+
+.graph-mode-breadcrumb:hover .graph-mode-chevron {
+  transform: translateY(1px);
 }
 
 .breadcrumb-tab-indicator {

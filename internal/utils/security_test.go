@@ -9,6 +9,9 @@ import (
 
 func TestSSRFSafeURL(t *testing.T) {
 	t.Parallel()
+	lookupPublicIP := func(string) ([]net.IP, error) {
+		return []net.IP{net.ParseIP("93.184.216.34")}, nil
+	}
 
 	tests := []struct {
 		name          string
@@ -110,7 +113,7 @@ func TestSSRFSafeURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ok, reason := isSSRFSafeURL(tt.rawURL)
+			ok, reason := isSSRFSafeURLWithLookup(tt.rawURL, lookupPublicIP)
 			if ok != tt.wantOK {
 				t.Fatalf("isSSRFSafeURL(%q) ok = %v, want %v, reason = %q", tt.rawURL, ok, tt.wantOK, reason)
 			}
@@ -124,12 +127,10 @@ func TestSSRFSafeURL(t *testing.T) {
 func TestSSRFSafeURL_AllowPublicDomain(t *testing.T) {
 	t.Parallel()
 
-	ok, reason := isSSRFSafeURL("https://example.com/path")
+	ok, reason := isSSRFSafeURLWithLookup("https://example.com/path", func(string) ([]net.IP, error) {
+		return []net.IP{net.ParseIP("93.184.216.34")}, nil
+	})
 	if !ok {
-		// This path depends on runtime DNS/network. If DNS is unavailable, skip to keep CI stable.
-		if strings.Contains(reason, "DNS resolution failed") {
-			t.Skipf("skip due to DNS unavailable in test environment: %s", reason)
-		}
 		t.Fatalf("expected public domain to be allowed, got ok=%v reason=%q", ok, reason)
 	}
 }

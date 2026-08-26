@@ -1,7 +1,10 @@
 package logger
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -9,6 +12,34 @@ import (
 	"github.com/Tencent/WeKnora/internal/types"
 	"github.com/sirupsen/logrus"
 )
+
+func TestConfigureFromEnvJSONProducesStructuredLog(t *testing.T) {
+	original, existed := os.LookupEnv("LOG_FORMAT")
+	if err := os.Setenv("LOG_FORMAT", "json"); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if existed {
+			_ = os.Setenv("LOG_FORMAT", original)
+		} else {
+			_ = os.Unsetenv("LOG_FORMAT")
+		}
+		ConfigureFromEnv()
+	})
+
+	ConfigureFromEnv()
+	var buf bytes.Buffer
+	SetOutput(&buf)
+	Infof(context.Background(), "structured %s", "message")
+
+	var record map[string]any
+	if err := json.Unmarshal(bytes.TrimSpace(buf.Bytes()), &record); err != nil {
+		t.Fatalf("JSON log parse failed: %v; output=%q", err, buf.String())
+	}
+	if record["msg"] != "structured message" {
+		t.Fatalf("msg = %#v, want structured message", record["msg"])
+	}
+}
 
 func newEntry(level logrus.Level, msg string, data logrus.Fields) *logrus.Entry {
 	e := logrus.NewEntry(logrus.New())

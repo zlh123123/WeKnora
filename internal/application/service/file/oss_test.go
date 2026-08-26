@@ -5,7 +5,16 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	secutils "github.com/Tencent/WeKnora/internal/utils"
 )
+
+func allowOSSTestEndpoints(t *testing.T) {
+	t.Helper()
+	t.Setenv("SSRF_WHITELIST_EXTRA", "oss-cn-hangzhou.aliyuncs.com,example.com")
+	secutils.ResetSSRFWhitelistForTest()
+	t.Cleanup(secutils.ResetSSRFWhitelistForTest)
+}
 
 func TestParseOssFilePath(t *testing.T) {
 	tests := []struct {
@@ -99,6 +108,7 @@ func TestParseOssFilePath(t *testing.T) {
 }
 
 func TestNewOSSClient(t *testing.T) {
+	allowOSSTestEndpoints(t)
 	tests := []struct {
 		name      string
 		endpoint  string
@@ -170,6 +180,7 @@ func TestCheckOssConnectivity_InvalidEndpoint(t *testing.T) {
 }
 
 func TestOssEnsureBucket_NonExistent(t *testing.T) {
+	allowOSSTestEndpoints(t)
 	client, err := newOSSClient(
 		"https://oss-cn-hangzhou.aliyuncs.com",
 		"cn-hangzhou",
@@ -188,6 +199,7 @@ func TestOssEnsureBucket_NonExistent(t *testing.T) {
 }
 
 func TestOssEnsureBucket_CreateFails(t *testing.T) {
+	allowOSSTestEndpoints(t)
 	client, err := newOSSClient(
 		"https://oss-cn-hangzhou.aliyuncs.com",
 		"cn-hangzhou",

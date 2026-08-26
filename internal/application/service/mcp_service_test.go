@@ -7,6 +7,7 @@ import (
 
 	"github.com/Tencent/WeKnora/internal/mcp"
 	"github.com/Tencent/WeKnora/internal/types"
+	secutils "github.com/Tencent/WeKnora/internal/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -180,6 +181,10 @@ func TestUpdateMCPService_RespectsScalarFieldPresence(t *testing.T) {
 }
 
 func TestUpdateMCPService_AppliesNonScalarUpdateWithoutName(t *testing.T) {
+	t.Setenv("SSRF_WHITELIST_EXTRA", "example.com")
+	secutils.ResetSSRFWhitelistForTest()
+	t.Cleanup(secutils.ResetSSRFWhitelistForTest)
+
 	ctx := context.Background()
 	svc, repo := newTestService()
 	id := seedService(t, repo, "stored-api", "stored-token")

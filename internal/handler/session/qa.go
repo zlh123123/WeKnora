@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	learningservice "github.com/Tencent/WeKnora/internal/application/service/learning"
 	"github.com/Tencent/WeKnora/internal/errors"
 	"github.com/Tencent/WeKnora/internal/event"
 	"github.com/Tencent/WeKnora/internal/logger"
@@ -1432,7 +1434,17 @@ func (h *Handler) completeAssistantMessage(
 ) {
 	assistantMessage.UpdatedAt = time.Now()
 	assistantMessage.IsCompleted = true
-	_ = h.messageService.UpdateMessage(ctx, assistantMessage)
+	messageUpdateErr := h.messageService.UpdateMessage(ctx, assistantMessage)
+	messagePersisted := messageUpdateErr == nil
+	if messageUpdateErr != nil {
+		logger.Warnf(ctx, "persist completed assistant message %s failed: %v", assistantMessage.ID, messageUpdateErr)
+	}
+	if messagePersisted && h.learningService != nil {
+		if err := h.learningService.RecordDisplayedReferences(ctx, assistantMessage); err != nil &&
+			!stderrors.Is(err, learningservice.ErrUnsupportedPrincipal) {
+			logger.Warnf(ctx, "learning: record displayed references failed for message %s: %v", assistantMessage.ID, err)
+		}
+	}
 
 	// Asynchronously index the Q&A pair into the chat history knowledge base for vector search.
 	// Use WithoutCancel so the goroutine survives after the HTTP request context is done.

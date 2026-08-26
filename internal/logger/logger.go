@@ -268,13 +268,21 @@ func ConfigureFromEnv() {
 		forceColor = (fi.Mode() & os.ModeCharDevice) != 0
 	}
 
-	// 设置日志格式而不修改全局时区
-	tmpl := resolveLogFormatFromEnv()
-	appLogger.SetFormatter(&CustomFormatter{
-		ForceColor:   forceColor,
-		Template:     tmpl,
-		threadNeeded: strings.Contains(tmpl, "%thread"),
-	})
+	// 设置日志格式而不修改全局时区。LOG_FORMAT=json 是部署中常见的
+	// 结构化日志配置，必须选择 JSONFormatter；把它当作自定义模板会让
+	// 每条日志都退化成字面量 "json"。
+	format := resolveLogFormatFromEnv()
+	if strings.EqualFold(format, "json") {
+		appLogger.SetFormatter(&logrus.JSONFormatter{
+			TimestampFormat: "2006-01-02 15:04:05.000",
+		})
+	} else {
+		appLogger.SetFormatter(&CustomFormatter{
+			ForceColor:   forceColor,
+			Template:     format,
+			threadNeeded: strings.Contains(format, "%thread"),
+		})
+	}
 	appLogger.SetReportCaller(false)
 }
 
@@ -346,8 +354,8 @@ func resolveLogPathFromEnv() string {
 	return defaultMacAppLogPath()
 }
 
-// resolveLogFormatFromEnv 从环境变量 LOG_FORMAT 读取自定义日志格式模板。
-// 为空则使用内置默认格式；非空则作为模板，支持占位符：
+// resolveLogFormatFromEnv 从环境变量 LOG_FORMAT 读取日志格式。
+// "json" 启用结构化 JSON；空值使用内置默认格式；其他值作为模板，支持占位符：
 // %d=时间 %level=级别 %thread=goroutine %logger=caller %traceId=请求ID %msg=消息+结构化字段
 func resolveLogFormatFromEnv() string {
 	return strings.TrimSpace(os.Getenv("LOG_FORMAT"))

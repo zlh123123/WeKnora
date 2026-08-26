@@ -405,6 +405,13 @@ func isIPLikeHostname(hostname string) bool {
 // - Cloud metadata endpoints
 // - Reserved hostnames (localhost, *.local, etc.)
 func isSSRFSafeURL(rawURL string) (bool, string) {
+	return isSSRFSafeURLWithLookup(rawURL, net.LookupIP)
+}
+
+// isSSRFSafeURLWithLookup contains the SSRF validation logic while allowing
+// tests to supply deterministic DNS answers. Production always enters through
+// isSSRFSafeURL above and therefore still uses the system resolver.
+func isSSRFSafeURLWithLookup(rawURL string, lookupIP func(string) ([]net.IP, error)) (bool, string) {
 	if rawURL == "" {
 		return false, "URL is empty"
 	}
@@ -463,9 +470,16 @@ func isSSRFSafeURL(rawURL string) (bool, string) {
 		return false, "IP-like hostname format is not allowed"
 	}
 
+	// Reject known non-HTTP service ports before doing DNS I/O. This is both
+	// cheaper and makes the rejection reason independent of the local resolver.
+	port := parsed.Port()
+	if restrictedPorts[port] {
+		return false, fmt.Sprintf("port %s is blocked for security reasons", port)
+	}
+
 	// Perform DNS resolution to check the resolved IP
 	// This prevents DNS rebinding attacks where a domain resolves to internal IPs
-	ips, err := net.LookupIP(hostname)
+	ips, err := lookupIP(hostname)
 	if err != nil {
 		return false, fmt.Sprintf("DNS resolution failed for hostname %s: cannot verify if it resolves to safe IP", hostname)
 	}
@@ -475,12 +489,6 @@ func isSSRFSafeURL(rawURL string) (bool, string) {
 		if restricted, reason := isRestrictedIP(resolvedIP); restricted {
 			return false, fmt.Sprintf("hostname %s resolves to restricted IP %s: %s", hostname, resolvedIP.String(), reason)
 		}
-	}
-
-	// Check for suspicious port numbers
-	port := parsed.Port()
-	if restrictedPorts[port] {
-		return false, fmt.Sprintf("port %s is blocked for security reasons", port)
 	}
 
 	return true, ""

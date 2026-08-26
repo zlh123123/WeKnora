@@ -49,38 +49,50 @@
         <!-- Legend Overlay -->
         <div v-if="graphReady" class="wiki-graph-legend" :class="{ 'legend-shifted': graphDrawerVisible }">
           <div class="legend-items">
-            <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('summary') }"
-              @click="toggleGraphFilterType('summary')">
-              <span class="legend-dot" style="background: #0052d9"></span>
-              {{ $t('knowledgeEditor.wikiBrowser.filterSummary') }}
-            </div>
-            <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('entity') }"
-              @click="toggleGraphFilterType('entity')">
-              <span class="legend-dot" style="background: #2ba471"></span>
-              {{ $t('knowledgeEditor.wikiBrowser.filterEntity') }}
-            </div>
-            <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('concept') }"
-              @click="toggleGraphFilterType('concept')">
-              <span class="legend-dot" style="background: #e37318"></span>
-              {{ $t('knowledgeEditor.wikiBrowser.filterConcept') }}
-            </div>
-            <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('synthesis') }"
-              @click="toggleGraphFilterType('synthesis')">
-              <span class="legend-dot" style="background: #0594fa"></span>
-              {{ $t('knowledgeEditor.wikiBrowser.filterSynthesis') }}
-            </div>
-            <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('comparison') }"
-              @click="toggleGraphFilterType('comparison')">
-              <span class="legend-dot" style="background: #d54941"></span>
-              {{ $t('knowledgeEditor.wikiBrowser.filterComparison') }}
-            </div>
-            <div v-if="graphFamiliarCount > 0" class="legend-item">
-              <span class="legend-familiar-ring"></span>
-              {{ $t('knowledgeEditor.wikiBrowser.legendFamiliar') }}
-            </div>
+            <template v-if="graphDisplayMode === 'knowledge'">
+              <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('summary') }"
+                @click="toggleGraphFilterType('summary')">
+                <span class="legend-dot" style="background: #0052d9"></span>
+                {{ $t('knowledgeEditor.wikiBrowser.filterSummary') }}
+              </div>
+              <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('entity') }"
+                @click="toggleGraphFilterType('entity')">
+                <span class="legend-dot" style="background: #2ba471"></span>
+                {{ $t('knowledgeEditor.wikiBrowser.filterEntity') }}
+              </div>
+              <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('concept') }"
+                @click="toggleGraphFilterType('concept')">
+                <span class="legend-dot" style="background: #e37318"></span>
+                {{ $t('knowledgeEditor.wikiBrowser.filterConcept') }}
+              </div>
+              <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('synthesis') }"
+                @click="toggleGraphFilterType('synthesis')">
+                <span class="legend-dot" style="background: #0594fa"></span>
+                {{ $t('knowledgeEditor.wikiBrowser.filterSynthesis') }}
+              </div>
+              <div class="legend-item clickable" :class="{ disabled: !graphFilterTypes.has('comparison') }"
+                @click="toggleGraphFilterType('comparison')">
+                <span class="legend-dot" style="background: #d54941"></span>
+                {{ $t('knowledgeEditor.wikiBrowser.filterComparison') }}
+              </div>
+              <div v-if="graphFamiliarCount > 0" class="legend-item">
+                <span class="legend-familiar-ring"></span>
+                {{ $t('knowledgeEditor.wikiBrowser.legendFamiliar') }}
+              </div>
+            </template>
+            <template v-else>
+              <div v-for="entry in learningLegendEntries" :key="entry.status" class="legend-item">
+                <span class="legend-dot" :style="{ background: entry.color }"></span>
+                {{ entry.label }}
+              </div>
+            </template>
           </div>
           <div class="legend-divider"></div>
           <div class="legend-actions">
+            <div v-if="graphDisplayMode === 'learning'" class="legend-action" @click="openLearningScan">
+              <span class="legend-action-icon"><t-icon name="chart-bubble" /></span>
+              <span>{{ $t('knowledgeEditor.wikiBrowser.learningScanStart') }}</span>
+            </div>
             <div class="legend-action" @click="fitGraphToView" title="Fit to View">
               <span class="legend-action-icon"><t-icon name="focus" /></span>
               <span>{{ $t('knowledgeEditor.wikiBrowser.fitView') || '适应屏幕' }}</span>
@@ -154,6 +166,67 @@
             <div v-if="graphDrawerNeighborHint" class="wiki-drawer-neighbor-hint" style="margin-bottom: 16px;">
               {{ graphDrawerNeighborHint }}
             </div>
+            <section v-if="graphDisplayMode === 'learning' && graphDrawerPage.page_type === 'concept'"
+              class="wiki-learning-status-card">
+              <div class="learning-card-heading">
+                <span>{{ $t('knowledgeEditor.wikiBrowser.learningCardTitle') }}</span>
+                <span class="learning-status-badge">
+                  <span class="learning-status-dot" :style="{ background: learningStatusColor(graphDrawerLearningState.status) }"></span>
+                  {{ learningStatusLabel(graphDrawerLearningState.status) }}
+                </span>
+              </div>
+              <div class="learning-metrics-grid">
+                <div class="learning-metric">
+                  <span>{{ $t('knowledgeEditor.wikiBrowser.learningExposure') }}</span>
+                  <strong>{{ graphDrawerLearningState.exposure_count }} · {{ graphDrawerLearningState.exposure_weight.toFixed(2) }}</strong>
+                </div>
+                <div class="learning-metric">
+                  <span>{{ $t('knowledgeEditor.wikiBrowser.learningMastery') }}</span>
+                  <strong>{{ Math.round(graphDrawerLearningState.verified_mastery * 100) }}%</strong>
+                </div>
+                <div class="learning-metric">
+                  <span>{{ $t('knowledgeEditor.wikiBrowser.learningLastExposed') }}</span>
+                  <strong>{{ graphDrawerLearningState.last_exposed_at ? formatDate(graphDrawerLearningState.last_exposed_at) : $t('knowledgeEditor.wikiBrowser.learningNoRecord') }}</strong>
+                </div>
+                <div class="learning-metric">
+                  <span>{{ $t('knowledgeEditor.wikiBrowser.learningLastAssessed') }}</span>
+                  <strong>{{ graphDrawerLearningState.last_assessed_at ? formatDate(graphDrawerLearningState.last_assessed_at) : $t('knowledgeEditor.wikiBrowser.learningNoRecord') }}</strong>
+                </div>
+              </div>
+              <div class="learning-confidence-row">
+                <span>{{ $t('knowledgeEditor.wikiBrowser.learningConfidence') }}</span>
+                <span>{{ Math.round(graphDrawerLearningState.mastery_confidence * 100) }}%</span>
+              </div>
+              <div class="learning-confidence-track">
+                <span :style="{ width: `${Math.round(graphDrawerLearningState.mastery_confidence * 100)}%` }"></span>
+              </div>
+              <div class="learning-insights" v-if="graphDrawerInsightsLoading || graphDrawerInsights">
+                <t-loading v-if="graphDrawerInsightsLoading" size="small" />
+                <template v-else-if="graphDrawerInsights">
+                  <div v-if="graphDrawerInsights.is_knowledge_gap" class="learning-gap-banner">
+                    <strong>潜在知识盲区</strong>
+                    <span>{{ graphDrawerInsights.gap_reason }}</span>
+                  </div>
+                  <div class="learning-evidence-section">
+                    <div class="learning-evidence-heading">证据轨迹</div>
+                    <div v-if="graphDrawerInsights.evidence.length === 0" class="learning-evidence-empty">暂无学习证据</div>
+                    <div v-for="item in graphDrawerInsights.evidence" :key="item.id" class="learning-evidence-item">
+                      <span class="learning-evidence-dot"></span>
+                      <span class="learning-evidence-label">{{ item.event_type === 'quiz_attempt' ? '答题验证' : '引用展示' }}</span>
+                      <time>{{ formatDate(item.occurred_at) }}</time>
+                    </div>
+                  </div>
+                  <div v-if="graphDrawerInsights.recommendation" class="learning-recommendation">
+                    <strong>下一步建议：{{ graphDrawerInsights.recommendation.title }}</strong>
+                    <span>{{ graphDrawerInsights.recommendation.reason }}</span>
+                    <t-button size="small" variant="outline" theme="primary" @click="openGraphDrawer(graphDrawerInsights.recommendation.slug)">学习此知识点</t-button>
+                  </div>
+                </template>
+              </div>
+              <t-button block theme="primary" variant="outline" @click="openLearningScan">
+                {{ $t('knowledgeEditor.wikiBrowser.verifyMastery') }}
+              </t-button>
+            </section>
             <div ref="drawerBodyRef" class="wiki-reader-body" v-html="graphDrawerContent"
               @click="handleGraphDrawerClick"></div>
           </template>
@@ -668,6 +741,40 @@
         @closePreImg="closeImagePreview" />
     </Teleport>
 
+    <t-dialog v-model:visible="learningScanVisible" :header="$t('knowledgeEditor.wikiBrowser.learningScanTitle')"
+      width="min(620px, calc(100vw - 32px))" :footer="false" :close-on-overlay-click="!learningScanSubmitting" class="wiki-learning-scan-dialog">
+      <t-loading v-if="learningScanLoading" />
+      <template v-else-if="learningScan">
+        <template v-if="learningScan.status !== 'completed' && currentLearningScanItem">
+          <div class="learning-scan-progress">
+            <strong>{{ learningScan.current_index + 1 }} / {{ learningScan.total_items }}</strong>
+            <span>{{ currentLearningScanItem.concept_title }}</span>
+          </div>
+          <div class="learning-scan-question">{{ currentLearningScanItem.question }}</div>
+          <t-radio-group v-model="learningScanSelectedOption" direction="vertical" class="learning-scan-options">
+            <t-radio v-for="(option, index) in currentLearningScanItem.options" :key="index" :value="index">
+              <span class="learning-scan-option-content">
+                <span class="learning-scan-option-label">{{ String.fromCharCode(65 + index) }}</span>
+                <span class="learning-scan-option-text">{{ option }}</span>
+              </span>
+            </t-radio>
+          </t-radio-group>
+          <t-button block theme="primary" :loading="learningScanSubmitting" :disabled="learningScanSelectedOption === null"
+            @click="submitLearningScanAnswer">{{ $t('knowledgeEditor.wikiBrowser.learningScanNext') }}</t-button>
+        </template>
+        <template v-else>
+          <div class="learning-scan-complete-icon"><t-icon name="check-circle-filled" /></div>
+          <h3>{{ $t('knowledgeEditor.wikiBrowser.learningScanComplete') }}</h3>
+          <div class="learning-scan-summary">
+            <span>{{ $t('knowledgeEditor.wikiBrowser.learningScanStrong') }} {{ learningScan.summary.verified_strong }}</span>
+            <span>{{ $t('knowledgeEditor.wikiBrowser.learningScanWeak') }} {{ learningScan.summary.verified_weak }}</span>
+            <span>{{ $t('knowledgeEditor.wikiBrowser.learningScanUncertain') }} {{ learningScan.summary.uncertain }}</span>
+          </div>
+          <t-button block theme="primary" @click="closeLearningScan">{{ $t('knowledgeEditor.wikiBrowser.learningScanViewMap') }}</t-button>
+        </template>
+      </template>
+    </t-dialog>
+
     <!-- Global Issues Drawer -->
     <t-drawer v-model:visible="showGlobalIssuesDrawer" :header="$t('knowledgeEditor.wikiBrowser.globalIssuesTitle')"
       size="480px" :footer="false" class="wiki-global-issues-drawer">
@@ -797,7 +904,7 @@ import { useMenuStore } from '@/stores/menu'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
-import { MessagePlugin } from 'tdesign-vue-next'
+import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import { hydrateProtectedFileImages, sanitizeMarkdownHTML } from '@/utils/security'
 import type { ProtectedFileAccessContext } from '@/utils/protectedFileAccess'
@@ -810,6 +917,26 @@ import {
 } from './wikiDirectoryState'
 import { getKnowledgeDetails } from '@/api/knowledge-base'
 import { createSessions } from '@/api/chat'
+import {
+  getLearningOverlay,
+  getLearningConceptInsights,
+  completeLearningScan,
+  getActiveLearningScan,
+  setLearningTracking,
+  startOrResumeLearningScan,
+  submitLearningQuizAttempt,
+  type LearningOverlay,
+  type LearningConceptInsights,
+  type LearningOverlayItem,
+  type LearningScan,
+  type LearningStatus,
+} from '@/api/learning'
+import {
+  buildLearningOverlayIndexes,
+  EMPTY_LEARNING_STATE,
+  LEARNING_STATUS_COLORS,
+  normalizeLearningStatus,
+} from './learningOverlay'
 import ChatView from '@/views/chat/index.vue'
 import {
   listWikiPages,
@@ -858,6 +985,7 @@ const emit = defineEmits<{
   (e: 'open-source-doc', knowledgeId: string): void
   (e: 'status-change', payload: { pendingTasks: number; isActive: boolean; pendingIssues: number }): void
   (e: 'view-graph', slug: string): void
+  (e: 'graph-display-mode-change', mode: GraphDisplayMode): void
 }>()
 
 // Wiki content can reference objects owned by the KB's source tenant (shared
@@ -993,6 +1121,168 @@ const loading = ref(false)
 const graphLoading = ref(false)
 const graphReady = ref(false)
 const showArrows = ref(true)
+type GraphDisplayMode = 'knowledge' | 'learning'
+const graphDisplayMode = ref<GraphDisplayMode>('knowledge')
+const learningOverlay = ref<LearningOverlay>({ tracking_enabled: false, items: [] })
+const learningOverlayLoading = ref(false)
+const learningOverlayIndexes = computed(() => buildLearningOverlayIndexes(learningOverlay.value.items || []))
+const learningScanVisible = ref(false)
+const learningScanLoading = ref(false)
+const learningScanSubmitting = ref(false)
+const learningScan = ref<LearningScan | null>(null)
+const learningScanSelectedOption = ref<number | null>(null)
+const learningScanKeys = new Map<string, string>()
+const currentLearningScanItem = computed(() => {
+  if (!learningScan.value) return null
+  return learningScan.value.items[learningScan.value.current_index] || null
+})
+
+const learningLegendEntries = computed(() => (
+  ['unseen', 'exposed', 'uncertain', 'verified_strong', 'verified_weak'] as LearningStatus[]
+).map(status => ({ status, color: LEARNING_STATUS_COLORS[status], label: learningStatusLabel(status) })))
+
+function learningStatusLabel(status?: string) {
+  return t(`knowledgeEditor.wikiBrowser.learningStatus${{
+    unseen: 'Unseen', exposed: 'Exposed', uncertain: 'Uncertain',
+    verified_strong: 'Strong', verified_weak: 'Weak',
+  }[normalizeLearningStatus(status)]}`)
+}
+
+function learningStatusColor(status?: string) {
+  return LEARNING_STATUS_COLORS[normalizeLearningStatus(status)]
+}
+
+function learningStateFor(slug: string, pageID = ''): LearningOverlayItem {
+  return learningOverlayIndexes.value.byPageID.get(pageID)
+    || learningOverlayIndexes.value.bySlug.get(slug)
+    || { ...EMPTY_LEARNING_STATE, slug, wiki_page_id: pageID }
+}
+
+async function fetchLearningOverlay() {
+  learningOverlayLoading.value = true
+  try {
+    const response = await getLearningOverlay(props.knowledgeBaseId)
+    learningOverlay.value = ((response as any).data || response) as LearningOverlay
+    if (!Array.isArray(learningOverlay.value.items)) learningOverlay.value.items = []
+    return learningOverlay.value
+  } finally {
+    learningOverlayLoading.value = false
+  }
+}
+
+function activateGraphDisplayMode(mode: GraphDisplayMode) {
+  graphDisplayMode.value = mode
+  emit('graph-display-mode-change', mode)
+  renderGraph({ preserveLayout: true })
+}
+
+async function requestGraphDisplayMode(mode: GraphDisplayMode) {
+  if (mode === graphDisplayMode.value || (mode !== 'knowledge' && mode !== 'learning')) return
+  if (mode === 'knowledge') {
+    activateGraphDisplayMode('knowledge')
+    return
+  }
+  try {
+    const overlay = await fetchLearningOverlay()
+    if (overlay.tracking_enabled) {
+      activateGraphDisplayMode('learning')
+      return
+    }
+    const dialog = DialogPlugin.confirm({
+      header: t('knowledgeEditor.wikiBrowser.learningEnableTitle'),
+      body: t('knowledgeEditor.wikiBrowser.learningEnableBody'),
+      confirmBtn: t('knowledgeEditor.wikiBrowser.learningEnableConfirm'),
+      cancelBtn: t('common.cancel'),
+      onConfirm: async () => {
+        try {
+          await setLearningTracking(props.knowledgeBaseId, true)
+          await fetchLearningOverlay()
+          activateGraphDisplayMode('learning')
+          MessagePlugin.success(t('knowledgeEditor.wikiBrowser.learningEnabled'))
+        } catch (error: any) {
+          MessagePlugin.error(error?.message || t('knowledgeEditor.wikiBrowser.learningLoadFailed'))
+        } finally {
+          dialog.destroy()
+        }
+      },
+      onCancel: () => dialog.destroy(),
+    })
+  } catch (error: any) {
+    MessagePlugin.error(error?.message || t('knowledgeEditor.wikiBrowser.learningLoadFailed'))
+  }
+}
+
+defineExpose({ requestGraphDisplayMode })
+
+function responseData<T>(response: unknown): T {
+  // The request wrapper returns the backend JSON body directly. For endpoints
+  // such as `GET .../scans/active`, a legitimate empty result is
+  // `{ data: null }`. Using `data || response` turns that response back into
+  // the wrapper object, which the scan dialog then mistakes for a scan.
+  if (response !== null && typeof response === 'object' && 'data' in response) {
+    return (response as { data: T }).data
+  }
+  return response as T
+}
+
+function learningScanKey(scanID: string, itemID: string) {
+  const key = `${scanID}:${itemID}`
+  let value = learningScanKeys.get(key)
+  if (!value) {
+    value = typeof crypto?.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    learningScanKeys.set(key, value)
+  }
+  return value
+}
+
+async function openLearningScan() {
+  learningScanVisible.value = true
+  learningScanLoading.value = true
+  learningScanSelectedOption.value = null
+  try {
+    const active = responseData<LearningScan | null>(await getActiveLearningScan(props.knowledgeBaseId))
+    learningScan.value = active || responseData<LearningScan>(await startOrResumeLearningScan(props.knowledgeBaseId))
+  } catch (error: any) {
+    learningScanVisible.value = false
+    MessagePlugin.error(error?.message || t('knowledgeEditor.wikiBrowser.learningScanFailed'))
+  } finally {
+    learningScanLoading.value = false
+  }
+}
+
+async function submitLearningScanAnswer() {
+  const scan = learningScan.value
+  const item = currentLearningScanItem.value
+  if (!scan || !item || learningScanSelectedOption.value === null) return
+  learningScanSubmitting.value = true
+  try {
+    await submitLearningQuizAttempt(props.knowledgeBaseId, item.id, {
+      scan_id: scan.id,
+      selected_option: learningScanSelectedOption.value,
+      idempotency_key: learningScanKey(scan.id, item.id),
+    })
+    const nextIndex = scan.current_index + 1
+    learningScanSelectedOption.value = null
+    if (nextIndex >= scan.total_items) {
+      learningScan.value = responseData<LearningScan>(await completeLearningScan(props.knowledgeBaseId, scan.id))
+      await fetchLearningOverlay()
+      renderGraph({ preserveLayout: true })
+    } else {
+      learningScan.value = { ...scan, status: 'active', current_index: nextIndex }
+    }
+  } catch (error: any) {
+    MessagePlugin.error(error?.message || t('knowledgeEditor.wikiBrowser.learningScanFailed'))
+  } finally {
+    learningScanSubmitting.value = false
+  }
+}
+
+function closeLearningScan() {
+  learningScanVisible.value = false
+  learningScan.value = null
+}
 
 // Graph filtering
 const graphFilterTypes = ref<Set<string>>(new Set(['summary', 'entity', 'concept', 'synthesis', 'comparison', 'index']))
@@ -1138,6 +1428,12 @@ function fitGraphToView() {
 
 const graphDrawerVisible = ref(false)
 const graphDrawerPage = ref<WikiPage | null>(null)
+const graphDrawerLearningState = computed(() => {
+  const page = graphDrawerPage.value
+  return page ? learningStateFor(page.slug, page.id) : { ...EMPTY_LEARNING_STATE }
+})
+const graphDrawerInsights = ref<LearningConceptInsights | null>(null)
+const graphDrawerInsightsLoading = ref(false)
 const navHistory = ref<WikiPage[]>([])
 // navFromSystemView remembers that the user was viewing the Index when they
 // clicked into a slug, so goBack can restore it
@@ -1540,10 +1836,31 @@ async function openGraphDrawer(slug: string) {
     const res = await getWikiPage(props.knowledgeBaseId, slug)
     graphDrawerPage.value = (res as any).data || res as any
     graphDrawerVisible.value = true
+    graphDrawerInsights.value = null
+    await loadGraphDrawerInsights()
   } catch (e) {
     console.error(`Failed to load page ${slug}:`, e)
   }
 }
+
+async function loadGraphDrawerInsights() {
+  if (graphDisplayMode.value !== 'learning' || graphDrawerPage.value?.page_type !== 'concept') return
+  const conceptKey = graphDrawerLearningState.value.concept_key
+  if (!conceptKey) return
+  graphDrawerInsightsLoading.value = true
+  try {
+    const insights = await getLearningConceptInsights(props.knowledgeBaseId, conceptKey)
+    graphDrawerInsights.value = ((insights as any).data || insights) as LearningConceptInsights
+  } catch {
+    graphDrawerInsights.value = null
+  } finally {
+    graphDrawerInsightsLoading.value = false
+  }
+}
+
+watch(graphDisplayMode, () => {
+  void loadGraphDrawerInsights()
+})
 
 function handleGraphDrawerClick(e: MouseEvent) {
   const target = e.target as HTMLElement
@@ -3712,6 +4029,7 @@ interface GNode {
   slug: string; title: string; type: string
   linkCount: number; pinned: boolean
   familiar: boolean
+  learningStatus: LearningStatus
 }
 
 // Persistent graph state so it survives re-renders
@@ -3738,6 +4056,17 @@ const graphSelectedSlug = ref<string | null>(null)
 const nodeColorMap: Record<string, string> = {
   summary: '#0052d9', entity: '#2ba471', concept: '#e37318',
   synthesis: '#0594fa', comparison: '#d54941', index: '#8c8c8c',
+}
+
+function nodeDisplayColor(node: Pick<GNode, 'type' | 'learningStatus'>) {
+  if (graphDisplayMode.value === 'learning') {
+    return node.type === 'concept' ? learningStatusColor(node.learningStatus) : '#c9cdd4'
+  }
+  return nodeColorMap[node.type] || '#8c8c8c'
+}
+
+function nodeBaseOpacity(node: Pick<GNode, 'type'>) {
+  return graphDisplayMode.value === 'learning' && node.type !== 'concept' ? '0.2' : '1'
 }
 
 // RenderGraphOpts tweaks how renderGraph initializes node positions when
@@ -3864,6 +4193,7 @@ function renderGraph(opts: RenderGraphOpts = {}) {
       slug: n.slug, title: n.title, type: n.page_type,
       linkCount: n.link_count || 0, pinned,
       familiar: !!n.familiar,
+      learningStatus: n.page_type === 'concept' ? learningStateFor(n.slug).status : 'unseen',
     }
     nodeMap.set(n.slug, node)
     return node
@@ -3997,7 +4327,7 @@ function renderGraph(opts: RenderGraphOpts = {}) {
     const expansionRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     expansionRing.setAttribute('r', String(r + 3))
     expansionRing.setAttribute('fill', 'none')
-    expansionRing.setAttribute('stroke', nodeColorMap[n.type] || '#8c8c8c')
+    expansionRing.setAttribute('stroke', nodeDisplayColor(n))
     expansionRing.setAttribute('stroke-width', '1.5')
     expansionRing.setAttribute('stroke-dasharray', '3 3')
     expansionRing.setAttribute('pointer-events', 'none')
@@ -4009,7 +4339,7 @@ function renderGraph(opts: RenderGraphOpts = {}) {
     // Solid outer ring: this page was built from a document the current
     // person keeps citing. Distinct from the dashed expansion ring so
     // "I use this" and "there are more neighbors" do not look the same.
-    if (n.familiar) {
+    if (n.familiar && graphDisplayMode.value === 'knowledge') {
       const familiarRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
       familiarRing.setAttribute('r', String(r + 7))
       familiarRing.setAttribute('fill', 'none')
@@ -4025,7 +4355,7 @@ function renderGraph(opts: RenderGraphOpts = {}) {
     const activeRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     activeRing.setAttribute('r', String(r + 5))
     activeRing.setAttribute('fill', 'none')
-    activeRing.setAttribute('stroke', nodeColorMap[n.type] || '#8c8c8c')
+    activeRing.setAttribute('stroke', nodeDisplayColor(n))
     activeRing.setAttribute('stroke-width', '2')
     activeRing.style.opacity = '0'
     activeRing.style.transition = 'opacity 0.2s'
@@ -4034,12 +4364,13 @@ function renderGraph(opts: RenderGraphOpts = {}) {
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     circle.setAttribute('r', String(r))
-    circle.setAttribute('fill', nodeColorMap[n.type] || '#8c8c8c')
+    circle.setAttribute('fill', nodeDisplayColor(n))
     circle.setAttribute('stroke', '#fff')
     circle.setAttribute('stroke-width', '2')
     // circle.setAttribute('filter', 'url(#node-shadow)')
     circle.style.transition = 'r 0.2s, stroke-width 0.2s, opacity 0.2s'
     g.appendChild(circle)
+    g.style.opacity = nodeBaseOpacity(n)
 
     // Text label wrapper for better readability
     const textBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
@@ -4400,7 +4731,7 @@ function setupDrag(
     const p = getPoint(e)
     startX = p.x - node.x
     startY = p.y - node.y
-    g.querySelector('circle')?.setAttribute('stroke', nodeColorMap[node.type] || '#8c8c8c')
+    g.querySelector('circle')?.setAttribute('stroke', nodeDisplayColor(node))
     g.querySelector('circle')?.setAttribute('stroke-width', '3')
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseup', onEnd)
@@ -4601,9 +4932,8 @@ function applyHighlight(
 
       // Determine which node is driving the highlight color
       const focusSlug = (hoverSlug && (e.source === hoverSlug || e.target === hoverSlug)) ? hoverSlug : slug
-      const hlColor = nodeColorMap[
-        nodeEls.find(n => n.node.slug === focusSlug)?.node.type || ''
-      ] || '#0052d9'
+      const focusNode = nodeEls.find(n => n.node.slug === focusSlug)?.node
+      const hlColor = focusNode ? nodeDisplayColor(focusNode) : '#0052d9'
 
       e.line.setAttribute('stroke', hlColor)
       e.line.setAttribute('marker-end', 'url(#arrow-end-hl)')
@@ -4632,7 +4962,7 @@ function clearHighlight(
   for (const { g, circle, activeRing, node } of nodeEls) {
     circle.setAttribute('r', String(getRadius(node)))
     circle.setAttribute('stroke-width', '2')
-    g.style.opacity = '1'
+    g.style.opacity = nodeBaseOpacity(node)
     activeRing.style.opacity = '0'
   }
   for (const e of edgeEls) {
@@ -5731,7 +6061,7 @@ onUnmounted(() => {
 .wiki-create-page-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 
   .wiki-create-page-field {
     display: flex;
@@ -6161,6 +6491,287 @@ onUnmounted(() => {
 
 :deep(.wiki-graph-drawer) {
   box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+}
+
+.wiki-learning-status-card {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid var(--td-component-stroke);
+  border-radius: 10px;
+  background: var(--td-bg-color-secondarycontainer);
+}
+
+.learning-scan-progress {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  color: var(--td-text-color-secondary);
+}
+
+.learning-scan-question {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--td-text-color-primary);
+  margin-bottom: 20px;
+}
+
+.learning-scan-options {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.learning-scan-options :deep(.t-radio) {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 1px solid var(--td-component-stroke);
+  border-radius: 8px;
+  background: var(--td-bg-color-container);
+  margin-right: 0;
+  white-space: normal;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.learning-scan-options :deep(.t-radio:hover) {
+  border-color: var(--td-brand-color);
+  background: var(--td-brand-color-light, rgba(0, 82, 217, 0.06));
+}
+
+.learning-scan-options :deep(.t-radio.t-is-checked) {
+  border-color: var(--td-brand-color);
+  background: var(--td-brand-color-light, rgba(0, 82, 217, 0.08));
+}
+
+.learning-scan-options :deep(.t-radio__label) {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.learning-scan-options :deep(.t-radio__input) {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.learning-scan-option-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.learning-scan-option-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.learning-scan-option-label {
+  display: inline-flex;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  font-size: 16px;
+  border-radius: 50%;
+  font-weight: 600;
+  color: var(--td-brand-color);
+  background: var(--td-brand-color-light, rgba(0, 82, 217, 0.1));
+}
+
+.learning-scan-complete-icon {
+  text-align: center;
+  color: var(--td-success-color);
+  font-size: 44px;
+}
+
+.wiki-learning-scan-dialog h3 {
+  text-align: center;
+  margin: 8px 0 20px;
+}
+
+:deep(.wiki-learning-scan-dialog .t-dialog) {
+  width: min(620px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+:deep(.wiki-learning-scan-dialog .t-dialog__body) {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.learning-scan-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+  color: var(--td-text-color-secondary);
+  text-align: center;
+}
+
+.learning-card-heading,
+.learning-confidence-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.learning-card-heading {
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--td-text-color-primary);
+}
+
+.learning-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--td-bg-color-container);
+  color: var(--td-text-color-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.learning-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.learning-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.learning-metric {
+  min-width: 0;
+
+  span,
+  strong {
+    display: block;
+  }
+
+  span {
+    margin-bottom: 4px;
+    color: var(--td-text-color-placeholder);
+    font-size: 11px;
+  }
+
+  strong {
+    overflow: hidden;
+    color: var(--td-text-color-primary);
+    font-size: 13px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.learning-confidence-row {
+  margin-bottom: 6px;
+  color: var(--td-text-color-secondary);
+  font-size: 11px;
+}
+
+.learning-confidence-track {
+  height: 5px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--td-component-stroke);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--td-brand-color);
+  }
+}
+
+.learning-insights {
+  margin: 16px 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--td-component-stroke);
+}
+
+.learning-gap-banner,
+.learning-recommendation {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--td-text-color-secondary);
+  font-size: 12px;
+}
+
+.learning-gap-banner strong,
+.learning-recommendation strong {
+  color: var(--td-text-color-primary);
+  font-size: 13px;
+}
+
+.learning-evidence-heading {
+  margin-bottom: 8px;
+  color: var(--td-text-color-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.learning-evidence-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  color: var(--td-text-color-secondary);
+  font-size: 12px;
+}
+
+.learning-evidence-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--td-brand-color);
+}
+
+.learning-evidence-label {
+  color: var(--td-text-color-primary);
+}
+
+.learning-evidence-item time {
+  margin-left: auto;
+  color: var(--td-text-color-placeholder);
+}
+
+.learning-evidence-empty {
+  color: var(--td-text-color-placeholder);
+  font-size: 12px;
+}
+
+.learning-recommendation {
+  margin-top: 14px;
+  margin-bottom: 0;
+  background: var(--td-brand-color-light, rgba(0, 82, 217, 0.08));
 }
 
 .graph-search-select {
