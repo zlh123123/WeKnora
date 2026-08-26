@@ -36,7 +36,7 @@ var versionedSQLiteColumns = map[string][]string{
 	"tenant_invitations": {"token", "accepted_count"},        // 000054
 	"embed_channels":     {"allow_memory"},                   // 000060
 	"mcp_oauth_tokens":   {"principal_type", "principal_id"}, // 000064
-	"quiz_items":         {"question_hash"},                   // 000090
+	"quiz_items":         {"question_hash"},                  // 000090
 }
 
 const expectedSQLiteMigrationVersion = 14
