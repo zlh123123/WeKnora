@@ -3793,6 +3793,7 @@ export default {
       learningScanUncertain: 'Uncertain:',
       learningScanViewMap: 'View my knowledge map',
       learningScanFailed: 'Knowledge scan is unavailable',
+      learningExport: 'Export learning data',
       emptyTitle: 'Wiki 페이지가 없습니다',
       emptyDesc: 'Wiki를 활성화하고 문서를 업로드하면 지식 페이지가 자동 생성됩니다',
       selectPageHint: '왼쪽에서 페이지를 선택하여 내용을 확인하세요',

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/Tencent/WeKnora/internal/logger"
 	"github.com/Tencent/WeKnora/internal/types"
@@ -124,6 +125,13 @@ func (r *tenantRepository) UpdateTenant(ctx context.Context, tenant *types.Tenan
 // "#<id>").
 func (r *tenantRepository) DeleteTenant(ctx context.Context, id uint64) error {
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, table := range []string{"learning_evidence", "quiz_attempts", "learning_scans", "user_concept_states", "learning_profiles", "quiz_items", "learning_concept_identities"} {
+			if err := tx.Exec("DELETE FROM "+table+" WHERE tenant_id = ?", id).Error; err != nil {
+				if !strings.Contains(strings.ToLower(err.Error()), "no such table") && !strings.Contains(strings.ToLower(err.Error()), "does not exist") {
+					return err
+				}
+			}
+		}
 		if err := tx.Where("tenant_id = ?", id).Delete(&types.TenantMember{}).Error; err != nil {
 			return err
 		}

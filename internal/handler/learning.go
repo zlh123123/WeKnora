@@ -77,6 +77,21 @@ func (h *LearningHandler) Clear(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": profile})
 }
 
+func (h *LearningHandler) Export(c *gin.Context) {
+	kbID, ok := learningKBID(c)
+	if !ok {
+		return
+	}
+	export, err := h.service.Export(c.Request.Context(), kbID)
+	if err != nil {
+		h.writeError(c, err)
+		return
+	}
+	c.Header("Content-Type", "application/json")
+	c.Header("Content-Disposition", `attachment; filename="knowledge-mri-export.json"`)
+	c.JSON(http.StatusOK, export)
+}
+
 // ListConceptStates returns the current Web user's materialized concept states
 // for one knowledge base.
 func (h *LearningHandler) ListConceptStates(c *gin.Context) {

@@ -2790,6 +2790,7 @@ export default {
       learningScanUncertain: 'Uncertain:',
       learningScanViewMap: 'View my knowledge map',
       learningScanFailed: 'Knowledge scan is unavailable',
+      learningExport: 'Export learning data',
       emptyTitle: 'No wiki pages yet',
       emptyDesc: 'Upload documents with Wiki enabled to auto-generate knowledge pages',
       selectPageHint: 'Select a page from the left to view its content',

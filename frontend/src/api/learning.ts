@@ -1,4 +1,4 @@
-import { get, post, put } from '../utils/request'
+import { get, post, put, getDown } from '../utils/request'
 
 export type LearningStatus = 'unseen' | 'exposed' | 'uncertain' | 'verified_strong' | 'verified_weak'
 
@@ -79,8 +79,14 @@ export function setLearningTracking(kbId: string, enabled: boolean) {
   return put(`/api/v1/knowledgebase/${kbId}/learning/tracking`, { enabled })
 }
 
+export function exportLearningProfile(kbId: string): Promise<Blob> {
+  return getDown(`/api/v1/knowledgebase/${kbId}/learning/export`)
+}
+
 export function startOrResumeLearningScan(kbId: string) {
-  return post(`/api/v1/knowledgebase/${kbId}/learning/scans`)
+  // A cold scan may need to generate grounded quiz banks for three concepts.
+  // Keep the longer timeout local to this model-backed request.
+  return post(`/api/v1/knowledgebase/${kbId}/learning/scans`, {}, { timeout: 3 * 60 * 1000 })
 }
 
 export function getActiveLearningScan(kbId: string) {

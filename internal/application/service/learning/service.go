@@ -96,6 +96,14 @@ func (s *Service) Clear(
 	return s.repo.ClearScope(ctx, scope)
 }
 
+func (s *Service) Export(ctx context.Context, knowledgeBaseID string) (*types.LearningExport, error) {
+	scope, err := ResolveScope(ctx, knowledgeBaseID)
+	if err != nil {
+		return nil, err
+	}
+	return s.repo.ExportScope(ctx, scope)
+}
+
 func (s *Service) ListConceptStates(
 	ctx context.Context, knowledgeBaseID string,
 ) ([]*types.UserConceptState, error) {

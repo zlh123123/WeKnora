@@ -80,6 +80,9 @@ type LearningRepository interface {
 	AppendExposureEvidence(ctx context.Context, scope LearningScope, evidence *types.LearningEvidence) (bool, error)
 	ListEvidence(ctx context.Context, scope LearningScope, conceptKey string, limit int) ([]*types.LearningEvidence, error)
 	CountEvidence(ctx context.Context, scope LearningScope) (int64, error)
+	ExportScope(ctx context.Context, scope LearningScope) (*types.LearningExport, error)
+	DeleteByKnowledgeBase(ctx context.Context, tenantID uint64, knowledgeBaseID string) error
+	DeleteByTenant(ctx context.Context, tenantID uint64) error
 }
 
 type LearningService interface {
@@ -99,4 +102,5 @@ type LearningService interface {
 	CompleteScan(ctx context.Context, knowledgeBaseID, scanID string) (*types.LearningScanView, error)
 	GetLearningOverlay(ctx context.Context, knowledgeBaseID string) (*types.LearningOverlay, error)
 	GetConceptInsights(ctx context.Context, knowledgeBaseID, conceptKey string) (*types.LearningConceptInsights, error)
+	Export(ctx context.Context, knowledgeBaseID string) (*types.LearningExport, error)
 }

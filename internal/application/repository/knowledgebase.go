@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/Tencent/WeKnora/internal/types"
@@ -174,7 +175,17 @@ func (r *knowledgeBaseRepository) UpdateKnowledgeBase(ctx context.Context, kb *t
 
 // DeleteKnowledgeBase deletes a knowledge base
 func (r *knowledgeBaseRepository) DeleteKnowledgeBase(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&types.KnowledgeBase{}).Error
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Learning rows are subject-owned but cannot outlive their KB.
+		for _, table := range []string{"learning_evidence", "quiz_attempts", "learning_scans", "user_concept_states", "learning_profiles", "quiz_items", "learning_concept_identities"} {
+			if err := tx.Exec("DELETE FROM "+table+" WHERE knowledge_base_id = ?", id).Error; err != nil {
+				if !strings.Contains(strings.ToLower(err.Error()), "no such table") && !strings.Contains(strings.ToLower(err.Error()), "does not exist") {
+					return err
+				}
+			}
+		}
+		return tx.Where("id = ?", id).Delete(&types.KnowledgeBase{}).Error
+	})
 }
 
 // CountByVectorStoreID counts active knowledge bases that are bound to the

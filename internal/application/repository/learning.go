@@ -1009,3 +1009,65 @@ func (r *learningRepository) ListEvidence(
 		Limit(limit).Find(&evidence).Error
 	return evidence, err
 }
+
+func (r *learningRepository) ExportScope(ctx context.Context, scope interfaces.LearningScope) (*types.LearningExport, error) {
+	if !scope.Valid() {
+		return nil, ErrInvalidLearningScope
+	}
+	profile, err := r.GetProfile(ctx, scope)
+	if err != nil {
+		return nil, err
+	}
+	states, err := r.ListConceptStates(ctx, scope)
+	if err != nil {
+		return nil, err
+	}
+	evidence := make([]*types.LearningEvidence, 0)
+	if err := learningScoped(r.db, ctx, scope).Order("occurred_at ASC, created_at ASC, id ASC").Find(&evidence).Error; err != nil {
+		return nil, err
+	}
+	attempts, err := r.ListQuizAttempts(ctx, scope)
+	if err != nil {
+		return nil, err
+	}
+	items := make([]*types.QuizItem, 0)
+	if err := r.db.WithContext(ctx).Where("tenant_id = ? AND knowledge_base_id = ?", scope.TenantID, scope.KnowledgeBaseID).Find(&items).Error; err != nil {
+		return nil, err
+	}
+	views := make([]types.QuizItemView, 0, len(items))
+	for _, item := range items {
+		if item == nil {
+			continue
+		}
+		views = append(views, types.QuizItemView{ID: item.ID, ConceptKey: item.ConceptKey, WikiPageID: item.WikiPageID, Question: item.Question, Options: item.Options, SourceChunkIDs: item.SourceChunkIDs, SourceHash: item.SourceHash, PromptVersion: item.PromptVersion, Difficulty: item.Difficulty, CreatedAt: item.CreatedAt})
+	}
+	return &types.LearningExport{ExportedAt: time.Now(), Profile: profile, ConceptStates: states, Evidence: evidence, QuizAttempts: attempts, QuizItems: views}, nil
+}
+
+func (r *learningRepository) DeleteByKnowledgeBase(ctx context.Context, tenantID uint64, knowledgeBaseID string) error {
+	if tenantID == 0 || strings.TrimSpace(knowledgeBaseID) == "" {
+		return ErrInvalidLearningScope
+	}
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, model := range []any{&types.LearningEvidence{}, &types.QuizAttempt{}, &types.LearningScan{}, &types.UserConceptState{}, &types.LearningProfile{}} {
+			if err := tx.Where("tenant_id = ? AND knowledge_base_id = ?", tenantID, knowledgeBaseID).Delete(model).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (r *learningRepository) DeleteByTenant(ctx context.Context, tenantID uint64) error {
+	if tenantID == 0 {
+		return ErrInvalidLearningScope
+	}
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, model := range []any{&types.LearningEvidence{}, &types.QuizAttempt{}, &types.LearningScan{}, &types.UserConceptState{}, &types.LearningProfile{}, &types.LearningConceptIdentity{}, &types.QuizItem{}} {
+			if err := tx.Where("tenant_id = ?", tenantID).Delete(model).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}

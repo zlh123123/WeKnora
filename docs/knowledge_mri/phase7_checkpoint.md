@@ -1,7 +1,7 @@
 # Knowledge MRI Phase 7 Checkpoint
 
-> Date: 2026-08-25 (Asia/Shanghai)
-> Status: implemented, automated verification complete; browser deployment pending final manual confirmation.
+> Date: 2026-08-29 (Asia/Shanghai)
+> Status: implemented, automated verification complete, and authenticated Edge acceptance completed against the running deployment.
 
 ## Scope
 
@@ -31,7 +31,7 @@ The service derives `tenant_id` and `subject_id` from the authenticated Web prin
 
 - `go test ./internal/application/service/learning ./internal/application/repository ./internal/handler ./internal/router -count=1`
 - `go test ./... -count=1`
-- `cd frontend && npm test` (410 passed)
+- `cd frontend && npm test` (441 passed)
 - `cd frontend && npm run type-check`
 - `git diff --check`
 
@@ -43,3 +43,21 @@ The service derives `tenant_id` and `subject_id` from the authenticated Web prin
 4. Confirm an unseen Concept is not labelled as a gap.
 5. Confirm `下一步建议` opens the recommended Wiki Concept.
 6. Confirm `重新验证` still opens the existing two-question scan flow.
+
+Completed on 2026-08-29 in Edge using KB `测试wiki`: switched to `我的知识地图`, opened
+`扫描我的知识状态`, answered all six questions, observed the completion summary
+(`验证掌握 1`, `待确认 2`), and returned to the personal graph successfully.
+
+### 2026-09-01 clean-KB acceptance
+
+Authenticated in-app-browser acceptance was repeated from the beginning against KB `test2`
+(`5ceda8d8-24b4-4a6b-8e5a-0f091560a7ee`). A cited chat answer completed, the personal map
+was enabled, and the cold scan produced three concepts and six grounded questions. All six
+answers were submitted, the completion summary reported three verified-strong concepts, and
+the personal map remained available after a full page reload. The `目标检测` Drawer showed
+status, mastery, confidence, last assessment, and two caller-scoped quiz evidence entries.
+
+This run found and fixed a compatibility gap for knowledge bases whose Wiki predates learning:
+`scanCandidates` now lazily creates learning concept identities from published Concept pages
+when the scoped identity set is empty. `test2` initialized 86 eligible identities without
+resetting the Wiki or user learning profile.

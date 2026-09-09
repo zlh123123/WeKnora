@@ -93,6 +93,10 @@
               <span class="legend-action-icon"><t-icon name="chart-bubble" /></span>
               <span>{{ $t('knowledgeEditor.wikiBrowser.learningScanStart') }}</span>
             </div>
+            <div v-if="graphDisplayMode === 'learning'" class="legend-action" :class="{ 'is-disabled': learningExporting }" @click="downloadLearningExport">
+              <span class="legend-action-icon"><t-icon name="download" /></span>
+              <span>{{ $t('knowledgeEditor.wikiBrowser.learningExport') }}</span>
+            </div>
             <div class="legend-action" @click="fitGraphToView" title="Fit to View">
               <span class="legend-action-icon"><t-icon name="focus" /></span>
               <span>{{ $t('knowledgeEditor.wikiBrowser.fitView') || '适应屏幕' }}</span>
@@ -937,6 +941,7 @@ import {
   LEARNING_STATUS_COLORS,
   normalizeLearningStatus,
 } from './learningOverlay'
+import { exportLearningProfile } from '@/api/learning'
 import ChatView from '@/views/chat/index.vue'
 import {
   listWikiPages,
@@ -1132,6 +1137,29 @@ const learningScanSubmitting = ref(false)
 const learningScan = ref<LearningScan | null>(null)
 const learningScanSelectedOption = ref<number | null>(null)
 const learningScanKeys = new Map<string, string>()
+const learningExporting = ref(false)
+
+async function downloadLearningExport() {
+  if (learningExporting.value) return
+  learningExporting.value = true
+  try {
+    const blob = await exportLearningProfile(props.knowledgeBaseId)
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'knowledge-mri-export.json'
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    link.click()
+    // Keep the object URL alive until the browser has started the download.
+    window.setTimeout(() => {
+      URL.revokeObjectURL(url)
+      link.remove()
+    }, 1000)
+  } finally {
+    learningExporting.value = false
+  }
+}
 const currentLearningScanItem = computed(() => {
   if (!learningScan.value) return null
   return learningScan.value.items[learningScan.value.current_index] || null

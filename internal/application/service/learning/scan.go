@@ -117,6 +117,29 @@ func (s *Service) scanCandidates(ctx context.Context, scope interfaces.LearningS
 	if err != nil {
 		return nil, err
 	}
+	// Older knowledge bases may have Wiki concepts but no learning identity
+	// rows because learning was enabled after ingestion. Initialize those rows
+	// lazily from the current published concept pages before selecting targets.
+	if len(identities) == 0 && s.wikiRepo != nil {
+		pages, pageErr := s.wikiRepo.ListByType(ctx, scope.KnowledgeBaseID, types.WikiPageTypeConcept)
+		if pageErr != nil {
+			return nil, pageErr
+		}
+		for _, page := range pages {
+			if page == nil || page.KnowledgeBaseID != scope.KnowledgeBaseID || page.Status != types.WikiPageStatusPublished {
+				continue
+			}
+			identity, _, ensureErr := s.EnsureConceptIdentity(ctx, scope.KnowledgeBaseID, interfaces.LearningConceptLookup{
+				CurrentWikiPageID: page.ID,
+				Slug:              page.Slug,
+				Title:             page.Title,
+				Aliases:           append([]string(nil), page.Aliases...),
+			})
+			if ensureErr == nil && identity != nil {
+				identities = append(identities, identity)
+			}
+		}
+	}
 	states, err := s.repo.ListConceptStates(ctx, scope)
 	if err != nil {
 		return nil, err

@@ -3795,6 +3795,7 @@ export default {
       learningScanUncertain: '待确认：',
       learningScanViewMap: '查看我的知识地图',
       learningScanFailed: '知识扫描暂时不可用',
+      learningExport: '导出学习数据',
       emptyTitle: '暂无 Wiki 页面',
       emptyDesc: '上传文档并启用 Wiki 后将自动生成知识页面',
       selectPageHint: '从左侧选择一个页面查看内容',

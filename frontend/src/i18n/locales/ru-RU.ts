@@ -3793,6 +3793,7 @@ export default {
       learningScanUncertain: 'Uncertain:',
       learningScanViewMap: 'View my knowledge map',
       learningScanFailed: 'Knowledge scan is unavailable',
+      learningExport: 'Export learning data',
       emptyTitle: 'Wiki-страниц пока нет',
       emptyDesc: 'Загрузите документы с включённым Wiki для автоматической генерации страниц',
       selectPageHint: 'Выберите страницу слева для просмотра',

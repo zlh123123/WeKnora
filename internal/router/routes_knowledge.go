@@ -344,6 +344,7 @@ func RegisterLearningRoutes(r *gin.RouterGroup, learningHandler *handler.Learnin
 	learning.GET("/profile", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetProfile)
 	learning.PUT("/tracking", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.SetTracking)
 	learning.DELETE("/data", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.Clear)
+	learning.GET("/export", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.Export)
 	learning.GET("/concept-states", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.ListConceptStates)
 	learning.GET("/concepts/:concept_key/quiz-items", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetQuizItems)
 	learning.GET("/concepts/:concept_key/insights", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetConceptInsights)

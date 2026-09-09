@@ -201,6 +201,17 @@ type LearningConceptInsights struct {
 	Recommendation *LearningRecommendation `json:"recommendation,omitempty"`
 }
 
+// LearningExport is the caller-scoped portable learning profile for one KB.
+// Quiz items are represented by safe views; answers remain server-side.
+type LearningExport struct {
+	ExportedAt    time.Time           `json:"exported_at"`
+	Profile       *LearningProfile    `json:"profile"`
+	ConceptStates []*UserConceptState `json:"concept_states"`
+	Evidence      []*LearningEvidence `json:"evidence"`
+	QuizAttempts  []*QuizAttempt      `json:"quiz_attempts"`
+	QuizItems     []QuizItemView      `json:"quiz_items,omitempty"`
+}
+
 type QuizAttempt struct {
 	ID              string    `json:"id" gorm:"primaryKey;type:varchar(36)"`
 	TenantID        uint64    `json:"tenant_id" gorm:"not null;index:idx_quiz_attempts_scope"`
