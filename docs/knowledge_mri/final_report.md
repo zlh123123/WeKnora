@@ -1,8 +1,10 @@
 # Knowledge MRI Final Report
 
+正式技术报告见 [`technical_report.md`](technical_report.md)。本文件保留为最终报告索引和简短状态摘要。
+
 ## Implemented
 
-Phases 0-7 are implemented: displayed-reference exposure, evidence-bound MCQ bank, deterministic mastery, personal graph overlay, six-question scan, Evidence Trail, gap classification, and deterministic recommendation. Phase 8 now includes caller-scoped JSON export and lifecycle-safe clear/disable behavior. Phase 9 includes a reproducible latent-mastery pilot script.
+Phases 0-8 的主要实现已完成：displayed-reference exposure、evidence-bound MCQ bank、deterministic mastery、personal graph overlay、six-question scan、Evidence Trail、gap classification、deterministic recommendation、caller-scoped export 和 clear/disable 生命周期控制。Phase 9 当前只有可复现的 latent-mastery 模拟评估；真实映射和题目质量抽样仍是提交前待办。
 
 ## Verification
 
