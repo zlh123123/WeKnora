@@ -64,9 +64,10 @@ type LearningRepository interface {
 	ListConceptIdentities(ctx context.Context, tenantID uint64, knowledgeBaseID string) ([]*types.LearningConceptIdentity, error)
 
 	ListQuizItems(ctx context.Context, tenantID uint64, knowledgeBaseID, conceptKey, sourceHash string) ([]*types.QuizItem, error)
+	ListQuizItemsByID(ctx context.Context, tenantID uint64, knowledgeBaseID string, ids []string) ([]*types.QuizItem, error)
 	SaveQuizItems(ctx context.Context, tenantID uint64, knowledgeBaseID, conceptKey, sourceHash string, items []*types.QuizItem) ([]*types.QuizItem, error)
 	SubmitQuizAttempt(ctx context.Context, scope LearningScope, itemID string, request types.QuizAttemptRequest) (*types.QuizAttemptResult, error)
-	GetActiveScan(ctx context.Context, scope LearningScope) (*types.LearningScan, error)
+	GetActiveScan(ctx context.Context, scope LearningScope, conceptKey ...string) (*types.LearningScan, error)
 	CreateScan(ctx context.Context, scope LearningScope, scan *types.LearningScan) error
 	GetScan(ctx context.Context, scope LearningScope, scanID string) (*types.LearningScan, error)
 	ListQuizAttemptsForScan(ctx context.Context, scope LearningScope, scanID string) ([]*types.QuizAttempt, error)
@@ -98,6 +99,7 @@ type LearningService interface {
 	GenerateQuizItems(ctx context.Context, knowledgeBaseID, conceptKey string) (*types.QuizBankResult, error)
 	SubmitQuizAttempt(ctx context.Context, knowledgeBaseID, itemID string, request types.QuizAttemptRequest) (*types.QuizAttemptResult, error)
 	StartOrResumeScan(ctx context.Context, knowledgeBaseID string) (*types.LearningScanView, error)
+	StartOrResumeConceptScan(ctx context.Context, knowledgeBaseID, conceptKey string) (*types.LearningScanView, error)
 	GetActiveScan(ctx context.Context, knowledgeBaseID string) (*types.LearningScanView, error)
 	CompleteScan(ctx context.Context, knowledgeBaseID, scanID string) (*types.LearningScanView, error)
 	GetLearningOverlay(ctx context.Context, knowledgeBaseID string) (*types.LearningOverlay, error)

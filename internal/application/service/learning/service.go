@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Tencent/WeKnora/internal/types"
@@ -21,6 +22,7 @@ var (
 )
 
 type Service struct {
+	scanLocks    [64]sync.Mutex
 	repo         interfaces.LearningRepository
 	wikiRepo     interfaces.WikiPageRepository
 	chunkRepo    interfaces.ChunkRepository

@@ -2781,6 +2781,7 @@ export default {
       learningLastAssessed: 'Last assessed',
       learningNoRecord: 'No record',
       verifyMastery: 'Verify mastery',
+      learningConceptScanTitle: 'Verify this concept',
       learningScanTitle: 'Quick Knowledge Scan',
       learningScanStart: 'Scan my knowledge state',
       learningScanNext: 'Submit and continue',

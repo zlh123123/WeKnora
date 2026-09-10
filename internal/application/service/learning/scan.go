@@ -2,7 +2,9 @@ package learning
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -28,10 +30,24 @@ type scanCandidate struct {
 // deterministic six-question scan. A concept that cannot yield two safe
 // questions is skipped so one model failure never breaks the whole scan.
 func (s *Service) StartOrResumeScan(ctx context.Context, knowledgeBaseID string) (*types.LearningScanView, error) {
+	return s.startOrResumeScan(ctx, knowledgeBaseID, "")
+}
+
+func (s *Service) StartOrResumeConceptScan(ctx context.Context, knowledgeBaseID, conceptKey string) (*types.LearningScanView, error) {
+	conceptKey = strings.TrimSpace(conceptKey)
+	if conceptKey == "" {
+		return nil, ErrLearningConceptNotFound
+	}
+	return s.startOrResumeScan(ctx, knowledgeBaseID, conceptKey)
+}
+
+func (s *Service) startOrResumeScan(ctx context.Context, knowledgeBaseID, conceptKey string) (*types.LearningScanView, error) {
 	scope, ownerCtx, kb, err := s.scanScope(ctx, knowledgeBaseID)
 	if err != nil {
 		return nil, err
 	}
+	unlock := s.lockLearningKB(scope.TenantID, knowledgeBaseID)
+	defer unlock()
 	profile, err := s.repo.GetProfile(ownerCtx, scope)
 	if err != nil {
 		return nil, err
@@ -39,17 +55,28 @@ func (s *Service) StartOrResumeScan(ctx context.Context, knowledgeBaseID string)
 	if profile == nil || !profile.TrackingEnabled {
 		return nil, ErrLearningTrackingDisabled
 	}
-	if active, err := s.repo.GetActiveScan(ownerCtx, scope); err != nil {
+	if active, err := s.repo.GetActiveScan(ownerCtx, scope, conceptKey); err != nil {
 		return nil, err
 	} else if active != nil {
 		return s.scanView(ownerCtx, scope, kb, active)
 	}
 
-	candidates, err := s.scanCandidates(ownerCtx, scope, kb)
+	var candidates []scanCandidate
+	target := scanConceptTarget * scanItemsPerConcept
+	if conceptKey == "" {
+		candidates, err = s.scanCandidates(ownerCtx, scope, kb)
+	} else {
+		var source *quizSource
+		source, err = s.resolveQuizSource(ownerCtx, knowledgeBaseID, conceptKey)
+		if err == nil {
+			candidates = []scanCandidate{{identity: source.identity, source: source}}
+		}
+		target = scanItemsPerConcept
+	}
 	if err != nil {
 		return nil, err
 	}
-	itemIDs := make(types.StringArray, 0, scanConceptTarget*scanItemsPerConcept)
+	itemIDs := make(types.StringArray, 0, target)
 	for _, candidate := range candidates {
 		items, itemErr := s.scanItems(ownerCtx, scope, knowledgeBaseID, candidate)
 		if itemErr != nil || len(items) < scanItemsPerConcept {
@@ -58,11 +85,11 @@ func (s *Service) StartOrResumeScan(ctx context.Context, knowledgeBaseID string)
 		for _, item := range items[:scanItemsPerConcept] {
 			itemIDs = append(itemIDs, item.ID)
 		}
-		if len(itemIDs) == scanConceptTarget*scanItemsPerConcept {
+		if len(itemIDs) == target {
 			break
 		}
 	}
-	if len(itemIDs) != scanConceptTarget*scanItemsPerConcept {
+	if len(itemIDs) != target {
 		return nil, ErrQuizCannotGenerate
 	}
 	scan := &types.LearningScan{ID: uuid.NewString(), Status: types.LearningScanStatusPending, QuizItemIDs: itemIDs}
@@ -112,33 +139,87 @@ func (s *Service) scanScope(ctx context.Context, knowledgeBaseID string) (interf
 	return interfaces.LearningScope{TenantID: kb.TenantID, SubjectID: callerScope.SubjectID, KnowledgeBaseID: knowledgeBaseID}, ownerCtx, kb, nil
 }
 
-func (s *Service) scanCandidates(ctx context.Context, scope interfaces.LearningScope, kb *types.KnowledgeBase) ([]scanCandidate, error) {
+// lockLearningKB bounds lock storage and serializes shared identity/bank initialization in one process.
+func (s *Service) lockLearningKB(tenantID uint64, kbID string) func() {
+	digest := sha256.Sum256([]byte(fmt.Sprintf("%d/%s", tenantID, kbID)))
+	lock := &s.scanLocks[int(digest[0])%len(s.scanLocks)]
+	lock.Lock()
+	return lock.Unlock
+}
+
+func (s *Service) reconcileConceptIdentities(ctx context.Context, scope interfaces.LearningScope, kb *types.KnowledgeBase) ([]*types.LearningConceptIdentity, error) {
 	identities, err := s.repo.ListConceptIdentities(ctx, kb.TenantID, scope.KnowledgeBaseID)
 	if err != nil {
 		return nil, err
 	}
-	// Older knowledge bases may have Wiki concepts but no learning identity
-	// rows because learning was enabled after ingestion. Initialize those rows
-	// lazily from the current published concept pages before selecting targets.
-	if len(identities) == 0 && s.wikiRepo != nil {
+	// Reconcile missing published pages even when exposure already materialized a subset.
+	if s.wikiRepo != nil {
 		pages, pageErr := s.wikiRepo.ListByType(ctx, scope.KnowledgeBaseID, types.WikiPageTypeConcept)
 		if pageErr != nil {
 			return nil, pageErr
 		}
+		publishedPages := make(map[string]bool, len(pages))
 		for _, page := range pages {
-			if page == nil || page.KnowledgeBaseID != scope.KnowledgeBaseID || page.Status != types.WikiPageStatusPublished {
-				continue
-			}
-			identity, _, ensureErr := s.EnsureConceptIdentity(ctx, scope.KnowledgeBaseID, interfaces.LearningConceptLookup{
-				CurrentWikiPageID: page.ID,
-				Slug:              page.Slug,
-				Title:             page.Title,
-				Aliases:           append([]string(nil), page.Aliases...),
-			})
-			if ensureErr == nil && identity != nil {
-				identities = append(identities, identity)
+			if page != nil && page.TenantID == kb.TenantID && page.KnowledgeBaseID == scope.KnowledgeBaseID && page.Status == types.WikiPageStatusPublished {
+				publishedPages[page.ID] = true
 			}
 		}
+		existingPages := make(map[string]bool, len(identities))
+		for _, identity := range identities {
+			if identity != nil && identity.CurrentWikiPageID != nil {
+				existingPages[*identity.CurrentWikiPageID] = true
+			}
+		}
+		sort.Slice(pages, func(i, j int) bool {
+			if pages[i] == nil {
+				return false
+			}
+			if pages[j] == nil {
+				return true
+			}
+			return pages[i].ID < pages[j].ID
+		})
+		for _, page := range pages {
+			if page == nil || page.TenantID != kb.TenantID || page.KnowledgeBaseID != scope.KnowledgeBaseID || page.Status != types.WikiPageStatusPublished || existingPages[page.ID] {
+				continue
+			}
+			lookup := interfaces.LearningConceptLookup{CurrentWikiPageID: page.ID, Slug: page.Slug, Title: page.Title, Aliases: append([]string(nil), page.Aliases...)}
+			resolution, resolveErr := s.repo.ResolveConceptIdentity(ctx, kb.TenantID, scope.KnowledgeBaseID, lookup)
+			if resolveErr != nil {
+				return nil, resolveErr
+			}
+			// Names/aliases do not justify stealing the identity of another live page.
+			if old := resolution.Identity; old != nil && old.CurrentWikiPageID != nil && *old.CurrentWikiPageID != page.ID && publishedPages[*old.CurrentWikiPageID] {
+				id := page.ID
+				if createErr := s.repo.CreateConceptIdentity(ctx, &types.LearningConceptIdentity{
+					TenantID: kb.TenantID, KnowledgeBaseID: scope.KnowledgeBaseID, CurrentWikiPageID: &id,
+					Slug: page.Slug, Title: page.Title, Aliases: append(types.StringArray(nil), page.Aliases...),
+					LearningEligible: true, Status: types.LearningConceptIdentityActive,
+				}); createErr != nil {
+					return nil, createErr
+				}
+				continue
+			}
+			_, _, ensureErr := s.EnsureConceptIdentity(ctx, scope.KnowledgeBaseID, interfaces.LearningConceptLookup{
+				CurrentWikiPageID: page.ID, Slug: page.Slug, Title: page.Title, Aliases: append([]string(nil), page.Aliases...),
+			})
+			if ensureErr != nil {
+				return nil, ensureErr
+			}
+		}
+		// Reload: an identity may have been rebound by slug instead of newly created.
+		identities, err = s.repo.ListConceptIdentities(ctx, kb.TenantID, scope.KnowledgeBaseID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return identities, nil
+}
+
+func (s *Service) scanCandidates(ctx context.Context, scope interfaces.LearningScope, kb *types.KnowledgeBase) ([]scanCandidate, error) {
+	identities, err := s.reconcileConceptIdentities(ctx, scope, kb)
+	if err != nil {
+		return nil, err
 	}
 	states, err := s.repo.ListConceptStates(ctx, scope)
 	if err != nil {
@@ -252,18 +333,19 @@ func (s *Service) scanView(ctx context.Context, scope interfaces.LearningScope, 
 			continue
 		}
 		titles[identity.ConceptKey] = identity.Title
-		items, listErr := s.repo.ListQuizItems(ctx, kb.TenantID, scope.KnowledgeBaseID, identity.ConceptKey, "")
-		if listErr != nil {
-			return nil, listErr
-		}
-		for _, item := range items {
-			itemsByID[item.ID] = item
-		}
 	}
+	bankItems, err := s.repo.ListQuizItemsByID(ctx, kb.TenantID, scope.KnowledgeBaseID, []string(scan.QuizItemIDs))
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range bankItems {
+		itemsByID[item.ID] = item
+	}
+
 	items := make([]types.LearningScanItem, 0, len(scan.QuizItemIDs))
 	for _, id := range scan.QuizItemIDs {
 		item := itemsByID[id]
-		if item == nil {
+		if item == nil || (scan.Status != types.LearningScanStatusCompleted && (!item.IsActive || item.IsStale)) {
 			return nil, interfaces.ErrLearningScanUnavailable
 		}
 		items = append(items, types.LearningScanItem{QuizItemView: types.QuizItemView{ID: item.ID, ConceptKey: item.ConceptKey, WikiPageID: item.WikiPageID, Question: item.Question, Options: item.Options, SourceChunkIDs: item.SourceChunkIDs, SourceHash: item.SourceHash, PromptVersion: item.PromptVersion, Difficulty: item.Difficulty, CreatedAt: item.CreatedAt}, ConceptTitle: titles[item.ConceptKey]})

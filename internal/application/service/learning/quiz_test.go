@@ -28,6 +28,16 @@ func (r *quizWikiRepository) GetByID(_ context.Context, id string) (*types.WikiP
 	return nil, errors.New("page not found")
 }
 
+func (r *quizWikiRepository) ListByType(_ context.Context, kbID string, pageType string) ([]*types.WikiPage, error) {
+	var pages []*types.WikiPage
+	for _, page := range r.pages {
+		if page.KnowledgeBaseID == kbID && page.PageType == pageType {
+			pages = append(pages, page)
+		}
+	}
+	return pages, nil
+}
+
 type quizChunkRepository struct {
 	interfaces.ChunkRepository
 	chunks map[string]*types.Chunk

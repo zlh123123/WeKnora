@@ -197,6 +197,19 @@ func (h *LearningHandler) StartOrResumeScan(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": scan})
 }
 
+func (h *LearningHandler) StartOrResumeConceptScan(c *gin.Context) {
+	kbID, ok := learningKBID(c)
+	if !ok {
+		return
+	}
+	scan, err := h.service.StartOrResumeConceptScan(c.Request.Context(), kbID, strings.TrimSpace(c.Param("concept_key")))
+	if err != nil {
+		h.writeError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": scan})
+}
+
 func (h *LearningHandler) GetActiveScan(c *gin.Context) {
 	kbID, ok := learningKBID(c)
 	if !ok {

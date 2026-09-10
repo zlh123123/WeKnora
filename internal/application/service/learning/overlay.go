@@ -33,7 +33,9 @@ func (s *Service) GetLearningOverlay(
 	if err != nil {
 		return nil, err
 	}
-	identities, err := s.repo.ListConceptIdentities(ownerCtx, kb.TenantID, knowledgeBaseID)
+	unlock := s.lockLearningKB(kb.TenantID, knowledgeBaseID)
+	identities, err := s.reconcileConceptIdentities(ownerCtx, scope, kb)
+	unlock()
 	if err != nil {
 		return nil, err
 	}

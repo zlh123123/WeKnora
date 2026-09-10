@@ -290,6 +290,19 @@ func (r *learningRepository) ListQuizItems(
 	return items, nil
 }
 
+// ListQuizItemsByID loads only the persisted scan's items, including completed history.
+func (r *learningRepository) ListQuizItemsByID(ctx context.Context, tenantID uint64, knowledgeBaseID string, ids []string) ([]*types.QuizItem, error) {
+	items := make([]*types.QuizItem, 0)
+	if tenantID == 0 || knowledgeBaseID == "" {
+		return nil, ErrInvalidLearningScope
+	}
+	if len(ids) == 0 {
+		return items, nil
+	}
+	err := r.db.WithContext(ctx).Where("tenant_id = ? AND knowledge_base_id = ? AND id IN ?", tenantID, knowledgeBaseID, ids).Find(&items).Error
+	return items, err
+}
+
 func (r *learningRepository) SaveQuizItems(
 	ctx context.Context, tenantID uint64, knowledgeBaseID, conceptKey, sourceHash string, items []*types.QuizItem,
 ) ([]*types.QuizItem, error) {
@@ -596,21 +609,39 @@ func (r *learningRepository) SubmitQuizAttempt(
 	return result, err
 }
 
-func (r *learningRepository) GetActiveScan(ctx context.Context, scope interfaces.LearningScope) (*types.LearningScan, error) {
+// GetActiveScan distinguishes the six-question scan from a two-question concept retest.
+// The target is derived from persisted items, so existing scans need no migration.
+func (r *learningRepository) GetActiveScan(ctx context.Context, scope interfaces.LearningScope, conceptKeys ...string) (*types.LearningScan, error) {
 	if !scope.Valid() {
 		return nil, ErrInvalidLearningScope
 	}
-	var scan types.LearningScan
-	err := learningScoped(r.db, ctx, scope).Where("status IN ?", []string{
-		types.LearningScanStatusPending, types.LearningScanStatusActive,
-	}).Order("created_at DESC, id DESC").First(&scan).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+	target := ""
+	if len(conceptKeys) > 0 {
+		target = strings.TrimSpace(conceptKeys[0])
 	}
-	if err != nil {
+	var scans []*types.LearningScan
+	if err := learningScoped(r.db, ctx, scope).Where("status IN ?", []string{types.LearningScanStatusPending, types.LearningScanStatusActive}).Order("created_at DESC, id DESC").Find(&scans).Error; err != nil {
 		return nil, err
 	}
-	return &scan, nil
+	for _, scan := range scans {
+		if target == "" {
+			if len(scan.QuizItemIDs) == 6 {
+				return scan, nil
+			}
+			continue
+		}
+		if len(scan.QuizItemIDs) != 2 {
+			continue
+		}
+		var count int64
+		if err := r.db.WithContext(ctx).Model(&types.QuizItem{}).Where("tenant_id = ? AND knowledge_base_id = ? AND concept_key = ? AND id IN ?", scope.TenantID, scope.KnowledgeBaseID, target, []string(scan.QuizItemIDs)).Count(&count).Error; err != nil {
+			return nil, err
+		}
+		if count == 2 {
+			return scan, nil
+		}
+	}
+	return nil, nil
 }
 
 func (r *learningRepository) CreateScan(ctx context.Context, scope interfaces.LearningScope, scan *types.LearningScan) error {

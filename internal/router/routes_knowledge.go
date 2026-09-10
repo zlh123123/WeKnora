@@ -349,6 +349,7 @@ func RegisterLearningRoutes(r *gin.RouterGroup, learningHandler *handler.Learnin
 	learning.GET("/concepts/:concept_key/quiz-items", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetQuizItems)
 	learning.GET("/concepts/:concept_key/insights", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetConceptInsights)
 	learning.POST("/concepts/:concept_key/quiz-items/generate", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GenerateQuizItems)
+	learning.POST("/concepts/:concept_key/scans", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.StartOrResumeConceptScan)
 	learning.POST("/scans", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.StartOrResumeScan)
 	learning.GET("/scans/active", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.GetActiveScan)
 	learning.POST("/scans/:scan_id/complete", g.Viewer(), g.KBAccessRead("kb_id"), learningHandler.CompleteScan)

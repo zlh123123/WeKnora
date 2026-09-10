@@ -61,7 +61,11 @@ func TestLearningOverlayReturnsOnlyRequestedKnowledgeBase(t *testing.T) {
 	}))
 	overlay, err := svc.GetLearningOverlay(learningWebContext(9, "alice"), "kb-shared")
 	require.NoError(t, err)
-	require.Empty(t, overlay.Items)
+	require.Len(t, overlay.Items, 2)
+	for _, item := range overlay.Items {
+		require.NotEqual(t, "foreign", item.ConceptKey)
+		require.Contains(t, []string{"page-a", "page-b"}, item.WikiPageID)
+	}
 }
 
 func TestConceptInsightsClassifiesGapAndRanksRecommendationDeterministically(t *testing.T) {

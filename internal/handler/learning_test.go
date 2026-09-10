@@ -16,12 +16,13 @@ import (
 
 type learningHandlerService struct {
 	interfaces.LearningService
-	states  []*types.UserConceptState
-	kbID    string
-	enabled *bool
-	itemID  string
-	attempt types.QuizAttemptRequest
-	overlay *types.LearningOverlay
+	states     []*types.UserConceptState
+	kbID       string
+	enabled    *bool
+	itemID     string
+	attempt    types.QuizAttemptRequest
+	overlay    *types.LearningOverlay
+	conceptKey string
 }
 
 func (s *learningHandlerService) GetLearningOverlay(
@@ -136,4 +137,28 @@ func TestLearningHandlerReturnsBatchOverlay(t *testing.T) {
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &response))
 	require.True(t, response.Data.TrackingEnabled)
 	require.Len(t, response.Data.Items, 1)
+}
+
+func (s *learningHandlerService) StartOrResumeConceptScan(_ context.Context, kbID, conceptKey string) (*types.LearningScanView, error) {
+	s.kbID, s.conceptKey = kbID, conceptKey
+	return &types.LearningScanView{ID: "target-scan", TotalItems: 2}, nil
+}
+
+func TestLearningHandlerRetestsRouteConceptInsteadOfClientBody(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	service := &learningHandlerService{}
+	router := gin.New()
+	router.POST("/knowledgebase/:kb_id/learning/concepts/:concept_key/scans", NewLearningHandler(service).StartOrResumeConceptScan)
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/knowledgebase/kb-a/learning/concepts/concept-b/scans", strings.NewReader(`{"concept_key":"other","subject_id":"web_user:bob","tenant_id":99}`))
+	request.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(recorder, request)
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, "kb-a", service.kbID)
+	require.Equal(t, "concept-b", service.conceptKey)
+	var response struct {
+		Data types.LearningScanView `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &response))
+	require.Equal(t, 2, response.Data.TotalItems)
 }

@@ -89,7 +89,7 @@
           </div>
           <div class="legend-divider"></div>
           <div class="legend-actions">
-            <div v-if="graphDisplayMode === 'learning'" class="legend-action" @click="openLearningScan">
+            <div v-if="graphDisplayMode === 'learning'" class="legend-action" @click="openLearningScan()">
               <span class="legend-action-icon"><t-icon name="chart-bubble" /></span>
               <span>{{ $t('knowledgeEditor.wikiBrowser.learningScanStart') }}</span>
             </div>
@@ -227,7 +227,7 @@
                   </div>
                 </template>
               </div>
-              <t-button block theme="primary" variant="outline" @click="openLearningScan">
+              <t-button block theme="primary" variant="outline" :disabled="!graphDrawerLearningState.concept_key" @click="openLearningScan(graphDrawerLearningState.concept_key)">
                 {{ $t('knowledgeEditor.wikiBrowser.verifyMastery') }}
               </t-button>
             </section>
@@ -745,7 +745,7 @@
         @closePreImg="closeImagePreview" />
     </Teleport>
 
-    <t-dialog v-model:visible="learningScanVisible" :header="$t('knowledgeEditor.wikiBrowser.learningScanTitle')"
+    <t-dialog v-model:visible="learningScanVisible" :header="$t(learningScan?.total_items === 2 ? 'knowledgeEditor.wikiBrowser.learningConceptScanTitle' : 'knowledgeEditor.wikiBrowser.learningScanTitle')"
       width="min(620px, calc(100vw - 32px))" :footer="false" :close-on-overlay-click="!learningScanSubmitting" class="wiki-learning-scan-dialog">
       <t-loading v-if="learningScanLoading" />
       <template v-else-if="learningScan">
@@ -928,6 +928,7 @@ import {
   getActiveLearningScan,
   setLearningTracking,
   startOrResumeLearningScan,
+  startOrResumeLearningConceptScan,
   submitLearningQuizAttempt,
   type LearningOverlay,
   type LearningConceptInsights,
@@ -1265,13 +1266,19 @@ function learningScanKey(scanID: string, itemID: string) {
   return value
 }
 
-async function openLearningScan() {
+async function openLearningScan(conceptKey?: string) {
+  if (learningScanLoading.value || learningScanSubmitting.value) return
+  learningScan.value = null
   learningScanVisible.value = true
   learningScanLoading.value = true
   learningScanSelectedOption.value = null
   try {
-    const active = responseData<LearningScan | null>(await getActiveLearningScan(props.knowledgeBaseId))
-    learningScan.value = active || responseData<LearningScan>(await startOrResumeLearningScan(props.knowledgeBaseId))
+    if (conceptKey) {
+      learningScan.value = responseData<LearningScan>(await startOrResumeLearningConceptScan(props.knowledgeBaseId, conceptKey))
+    } else {
+      const active = responseData<LearningScan | null>(await getActiveLearningScan(props.knowledgeBaseId))
+      learningScan.value = active || responseData<LearningScan>(await startOrResumeLearningScan(props.knowledgeBaseId))
+    }
   } catch (error: any) {
     learningScanVisible.value = false
     MessagePlugin.error(error?.message || t('knowledgeEditor.wikiBrowser.learningScanFailed'))
@@ -1283,7 +1290,7 @@ async function openLearningScan() {
 async function submitLearningScanAnswer() {
   const scan = learningScan.value
   const item = currentLearningScanItem.value
-  if (!scan || !item || learningScanSelectedOption.value === null) return
+  if (!scan || !item || learningScanSelectedOption.value === null || learningScanSubmitting.value) return
   learningScanSubmitting.value = true
   try {
     await submitLearningQuizAttempt(props.knowledgeBaseId, item.id, {
@@ -1296,6 +1303,7 @@ async function submitLearningScanAnswer() {
     if (nextIndex >= scan.total_items) {
       learningScan.value = responseData<LearningScan>(await completeLearningScan(props.knowledgeBaseId, scan.id))
       await fetchLearningOverlay()
+      await loadGraphDrawerInsights()
       renderGraph({ preserveLayout: true })
     } else {
       learningScan.value = { ...scan, status: 'active', current_index: nextIndex }

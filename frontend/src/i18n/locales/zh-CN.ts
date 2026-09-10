@@ -3786,6 +3786,7 @@ export default {
       learningLastAssessed: '最近验证',
       learningNoRecord: '暂无记录',
       verifyMastery: '验证掌握程度',
+      learningConceptScanTitle: '当前知识点验证',
       learningScanTitle: '快速知识扫描',
       learningScanStart: '扫描我的知识状态',
       learningScanNext: '提交并继续',

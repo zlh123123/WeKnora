@@ -89,6 +89,10 @@ export function startOrResumeLearningScan(kbId: string) {
   return post(`/api/v1/knowledgebase/${kbId}/learning/scans`, {}, { timeout: 3 * 60 * 1000 })
 }
 
+export function startOrResumeLearningConceptScan(kbId: string, conceptKey: string) {
+  return post(`/api/v1/knowledgebase/${kbId}/learning/concepts/${encodeURIComponent(conceptKey)}/scans`, {}, { timeout: 3 * 60 * 1000 })
+}
+
 export function getActiveLearningScan(kbId: string) {
   return get(`/api/v1/knowledgebase/${kbId}/learning/scans/active`)
 }
