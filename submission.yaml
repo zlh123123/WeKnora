@@ -15,6 +15,7 @@ repository:
   tag: "rhino-2026-final-4-r2"
 artifacts:
   technical_report_pdf: "docs/knowledge_mri/technical_report.pdf"
-  technical_report_docx: "docs/knowledge_mri/technical_report.docx"
+  technical_report_markdown: "docs/knowledge_mri/technical_report.md"
+  technical_report_pdf: "docs/knowledge_mri/technical_report.pdf"
   run_and_demo: "docs/knowledge_mri/run_and_demo.md"
   evaluation: "docs/knowledge_mri/evaluation.md"

@@ -11,7 +11,8 @@
 
 提交材料：
 - 技术报告 PDF：仓库 `docs/knowledge_mri/technical_report.pdf`（同时附 PDF）
-- 技术报告 DOCX：仓库 `docs/knowledge_mri/technical_report.docx`（可编辑版本）
+- 技术报告 Markdown 主文档：仓库 `docs/knowledge_mri/technical_report.md`（建议以此版本阅读和修改）
+- 技术报告 PDF 阅读版：仓库 `docs/knowledge_mri/technical_report.pdf`（排版版）
 - 运行与演示：`docs/knowledge_mri/run_and_demo.md`
 - 评估报告与冻结原始材料：`docs/knowledge_mri/evaluation.md` 及 `docs/knowledge_mri/evaluation/`
 - 代码类提交元数据：仓库根目录 `submission.yaml`
