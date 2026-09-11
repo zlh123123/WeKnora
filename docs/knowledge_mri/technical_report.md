@@ -138,7 +138,7 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 ## 11. 交付与复现索引
 
-- 代码：GitHub zlh123123/WeKnora，标签 rhino-2026-final-4；完整 SHA 见标签及 submission.yaml。
+- 代码：GitHub zlh123123/WeKnora，标签 rhino-2026-final-4-r3；完整 SHA 见标签及 submission.yaml。
 - 技术说明：technical_report.md / technical_report.pdf。
 - 运行与演示：run_and_demo.md；原创短材料 demo/rag_demo.md。
 - 评估：evaluation.md、evaluation/ 下冻结来源、标签和数值。
@@ -147,25 +147,44 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 复算只需要 Python 3 标准库；交互原型还需要 Docker、可用模型和知识库资料。运行说明明确了源码构建方式和已验证环境。没有附带真实用户数据或服务密钥。
 
-## 附录：真实界面
+## 附录：界面展示
+
+本附录完整展示 6 张界面图。图 1–4 来自阶段验收，图 5–6 来自 2026-09-10 的最新实时验收。阶段截图分辨率较低，但保留了完整交互状态；最新截图为 1200×770。
+
+### 图 1：知识图谱 / 我的知识地图切换
+
+![知识图谱与我的知识地图切换](screenshots/phase5_breadcrumb_mode_dropdown.png)
+
+该图展示公共知识图谱和个人知识地图的切换入口。
+
+### 图 2：普通知识图谱
+
+![普通知识图谱](screenshots/phase5_ordinary_graph.png)
+
+该图展示公共知识图谱、节点关系和图谱图例。
+
+### 图 3：个人知识地图
+
+![个人知识地图](screenshots/phase5_personal_map.png)
+
+该图展示个人学习状态颜色图例和知识网络 overlay。
+
+### 图 4：节点学习抽屉
+
+![节点学习抽屉](screenshots/phase5_learning_drawer.png)
+
+该图展示节点状态、掌握比例、证据时间线和“验证掌握程度”入口。
+
+### 图 5：最新个人地图与证据抽屉
 
 ![个人地图与证据抽屉](submission/map-evidence-2026-09-10.png)
 
-图 1：2026-09-10 重新打开本机页面，RAG 节点保留既有验证和证据时间线。公共图包含非 Concept 节点，因此图中总节点数不等于本报告的学习 Concept 数。
+2026-09-10 重新打开本机页面后的真实状态。RAG 节点保留既有验证结果和证据时间线。
+
+### 图 6：最新两题定向复测
 
 ![两题定向复测](submission/targeted-retest-2026-09-10.png)
 
-图 2：从当前节点进入两题复测，显示 1/2。此处环境名称题正是审核中的 Q04 失败案例；截图证明交互入口可用，不代表这道题通过质量审核。本轮仅打开，未提交新答案。
+从当前节点进入两题复测，显示 1/2。该图证明交互入口和题目恢复流程可用，不代表其中题目已经通过质量审核。
 
-## 附录：界面证据补充
-
-主报告嵌入的图 1 和图 2 是 2026-09-10 重新验收时保存的 1200×770 高清截图，分别展示个人地图/证据抽屉和两题定向复测。
-
-此前阶段验收的 4 张 765×771 截图保留在仓库 [screenshots/](screenshots/) 目录，作为历史参考，不再嵌入 PDF，以免缩放后影响阅读：
-
-- [知识图谱 / 我的知识地图切换](screenshots/phase5_breadcrumb_mode_dropdown.png)
-- [普通知识图谱](screenshots/phase5_ordinary_graph.png)
-- [个人知识地图](screenshots/phase5_personal_map.png)
-- [节点学习抽屉](screenshots/phase5_learning_drawer.png)
-
-快速扫描 `1 / 6`、导出、停用和清除确认框的操作步骤见 [run_and_demo.md](run_and_demo.md)。浏览器控制恢复后，下一次验收应优先补拍这三类高清动态状态。
+快速扫描 1/6、导出学习数据、停用学习追踪和清除确认框的操作步骤见 [run_and_demo.md](run_and_demo.md)。
