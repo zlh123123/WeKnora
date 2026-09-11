@@ -3795,6 +3795,13 @@ export default {
       learningScanViewMap: 'View my knowledge map',
       learningScanFailed: 'Knowledge scan is unavailable',
       learningExport: 'Export learning data',
+      learningDisable: "Disable learning tracking",
+      learningDisableBody: "Stop recording learning activity in this knowledge base and return to the public graph. Existing data is retained. You can enable tracking again when opening your map.",
+      learningDisableDone: "Learning tracking disabled",
+      learningClear: "Clear my learning data",
+      learningClearBody: "Permanently delete your states, evidence, answers and scan progress in this knowledge base. This cannot be undone. Other users and the shared question bank are unaffected. Export first if needed. New activity will still be recorded.",
+      learningClearDone: "Your learning data in this knowledge base was cleared",
+
       emptyTitle: 'Wiki 페이지가 없습니다',
       emptyDesc: 'Wiki를 활성화하고 문서를 업로드하면 지식 페이지가 자동 생성됩니다',
       selectPageHint: '왼쪽에서 페이지를 선택하여 내용을 확인하세요',

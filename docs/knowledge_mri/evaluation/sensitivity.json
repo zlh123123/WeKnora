@@ -1,0 +1,182 @@
+{
+  "seed": 20260910,
+  "samples": 10000,
+  "latent": "Uniform(0,1)",
+  "outcomes": "independent Bernoulli(latent), fixed latent, no learning over time",
+  "exposure": "independent Uniform(0,1), or clip(p + N(0,0.2)), or clip(1-p + N(0,0.2))",
+  "window": 4,
+  "note": "Synthetic sensitivity only. Laplace is a comparison, not implemented product behavior. Confidence is sample coverage, not a probability.",
+  "results": [
+    {
+      "exposure_scenario": "independent",
+      "attempts": 2,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.32860356120566414,
+        "mastery": 0.2512,
+        "mastery_times_confidence": 0.276275,
+        "laplace": 0.2092
+      },
+      "status_counts": {
+        "strong": 3321,
+        "uncertain": 3376,
+        "weak": 3303
+      },
+      "strong_count": 3321,
+      "strong_with_latent_below_0.8": 1668,
+      "strong_with_latent_below_0.8_rate": 0.5022583559168925
+    },
+    {
+      "exposure_scenario": "independent",
+      "attempts": 4,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.32860356120566414,
+        "mastery": 0.21053125,
+        "mastery_times_confidence": 0.21053125,
+        "laplace": 0.1960194444444419
+      },
+      "status_counts": {
+        "strong": 1989,
+        "uncertain": 3996,
+        "weak": 4015
+      },
+      "strong_count": 1989,
+      "strong_with_latent_below_0.8": 623,
+      "strong_with_latent_below_0.8_rate": 0.31322272498743087
+    },
+    {
+      "exposure_scenario": "independent",
+      "attempts": 6,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.32860356120566414,
+        "mastery": 0.211675,
+        "mastery_times_confidence": 0.211675,
+        "laplace": 0.19679999999999742
+      },
+      "status_counts": {
+        "strong": 1991,
+        "uncertain": 4011,
+        "weak": 3998
+      },
+      "strong_count": 1991,
+      "strong_with_latent_below_0.8": 645,
+      "strong_with_latent_below_0.8_rate": 0.32395781014565544
+    },
+    {
+      "exposure_scenario": "positively_correlated",
+      "attempts": 2,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.20009461253421965,
+        "mastery": 0.2512,
+        "mastery_times_confidence": 0.276275,
+        "laplace": 0.2092
+      },
+      "status_counts": {
+        "strong": 3321,
+        "uncertain": 3376,
+        "weak": 3303
+      },
+      "strong_count": 3321,
+      "strong_with_latent_below_0.8": 1668,
+      "strong_with_latent_below_0.8_rate": 0.5022583559168925
+    },
+    {
+      "exposure_scenario": "positively_correlated",
+      "attempts": 4,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.20009461253421965,
+        "mastery": 0.21053125,
+        "mastery_times_confidence": 0.21053125,
+        "laplace": 0.1960194444444419
+      },
+      "status_counts": {
+        "strong": 1989,
+        "uncertain": 3996,
+        "weak": 4015
+      },
+      "strong_count": 1989,
+      "strong_with_latent_below_0.8": 623,
+      "strong_with_latent_below_0.8_rate": 0.31322272498743087
+    },
+    {
+      "exposure_scenario": "positively_correlated",
+      "attempts": 6,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.20009461253421965,
+        "mastery": 0.211675,
+        "mastery_times_confidence": 0.211675,
+        "laplace": 0.19679999999999742
+      },
+      "status_counts": {
+        "strong": 1991,
+        "uncertain": 4011,
+        "weak": 3998
+      },
+      "strong_count": 1991,
+      "strong_with_latent_below_0.8": 645,
+      "strong_with_latent_below_0.8_rate": 0.32395781014565544
+    },
+    {
+      "exposure_scenario": "negatively_correlated",
+      "attempts": 2,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.4964521091626556,
+        "mastery": 0.2512,
+        "mastery_times_confidence": 0.276275,
+        "laplace": 0.2092
+      },
+      "status_counts": {
+        "strong": 3321,
+        "uncertain": 3376,
+        "weak": 3303
+      },
+      "strong_count": 3321,
+      "strong_with_latent_below_0.8": 1668,
+      "strong_with_latent_below_0.8_rate": 0.5022583559168925
+    },
+    {
+      "exposure_scenario": "negatively_correlated",
+      "attempts": 4,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.4964521091626556,
+        "mastery": 0.21053125,
+        "mastery_times_confidence": 0.21053125,
+        "laplace": 0.1960194444444419
+      },
+      "status_counts": {
+        "strong": 1989,
+        "uncertain": 3996,
+        "weak": 4015
+      },
+      "strong_count": 1989,
+      "strong_with_latent_below_0.8": 623,
+      "strong_with_latent_below_0.8_rate": 0.31322272498743087
+    },
+    {
+      "exposure_scenario": "negatively_correlated",
+      "attempts": 6,
+      "brier": {
+        "constant_0.5": 0.25,
+        "exposure": 0.4964521091626556,
+        "mastery": 0.211675,
+        "mastery_times_confidence": 0.211675,
+        "laplace": 0.19679999999999742
+      },
+      "status_counts": {
+        "strong": 1991,
+        "uncertain": 4011,
+        "weak": 3998
+      },
+      "strong_count": 1991,
+      "strong_with_latent_below_0.8": 645,
+      "strong_with_latent_below_0.8_rate": 0.32395781014565544
+    }
+  ]
+}

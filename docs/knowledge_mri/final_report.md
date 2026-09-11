@@ -1,3 +1,5 @@
+> 最终可提交报告见 [技术报告 PDF](technical_report.pdf)、[评估报告](evaluation.md) 和 [交付清单](submission/README.md)。本文保留阶段记录；最终结论以上述材料为准。
+
 # Knowledge MRI Final Report
 
 正式技术报告见 [`technical_report.md`](technical_report.md)。本文件保留为最终报告索引和简短状态摘要。

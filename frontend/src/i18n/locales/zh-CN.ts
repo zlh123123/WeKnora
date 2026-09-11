@@ -3797,6 +3797,13 @@ export default {
       learningScanViewMap: '查看我的知识地图',
       learningScanFailed: '知识扫描暂时不可用',
       learningExport: '导出学习数据',
+      learningDisable: "停用学习追踪",
+      learningDisableBody: "停用后将停止记录当前知识库的学习活动，并返回公共知识图谱。已有学习数据会保留；再次进入个人地图时可重新开启。",
+      learningDisableDone: "已停用学习追踪",
+      learningClear: "清除我的学习数据",
+      learningClearBody: "将永久删除你在当前知识库的学习状态、证据、作答和扫描进度，无法撤销。其他用户的数据和公共题库不受影响。建议先导出；清除后仍会记录新的学习活动。",
+      learningClearDone: "已清除当前知识库的个人学习数据",
+
       emptyTitle: '暂无 Wiki 页面',
       emptyDesc: '上传文档并启用 Wiki 后将自动生成知识页面',
       selectPageHint: '从左侧选择一个页面查看内容',

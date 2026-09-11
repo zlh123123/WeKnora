@@ -1,3 +1,5 @@
+> 已完成的作者侧 AI 审核见 [review.json](evaluation/review.json) 和 [结果](evaluation.md)。下文仅保留后续独立人工复核模板，不要求提交者现在另填一遍。
+
 # Knowledge MRI 人工评估记录模板
 
 这份模板用于提交前填写真实抽样结果。填写时保留失败样本，不要只保留通过项。所有样本使用脱敏的 Concept、Chunk 和 Quiz ID；不要记录 API key、Cookie 或完整用户对话。

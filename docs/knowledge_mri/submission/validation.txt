@@ -1,0 +1,21 @@
+Date: 2026-09-10, local macOS workspace
+Scope: final export test + offline evaluation + artifact checks
+
+go test ./internal/application/service/learning ./internal/application/repository ./internal/handler ./internal/router -count=1
+ok  	github.com/Tencent/WeKnora/internal/application/service/learning	5.430s
+ok  	github.com/Tencent/WeKnora/internal/application/repository	2.073s
+ok  	github.com/Tencent/WeKnora/internal/handler	5.518s
+ok  	github.com/Tencent/WeKnora/internal/router	5.932s
+
+Offline report and sensitivity reproduction: byte-for-byte matches frozen results.json / sensitivity.json.
+Review aggregator rejects missing, duplicate and invalid labels: all three cases passed.
+PDF: six pages, rendered and visually inspected; final appendix captions stay with screenshots.
+DOCX: editable companion generated from the same Markdown; PDF is the visually verified submission copy.
+Earlier full Go/race/frontend regression and real browser acceptance are recorded in retest_checkpoint_2026-09-10.md.
+Current browser recheck: retained RAG evidence; current-concept verification opens 1/2. No new answer submitted.
+Screenshots crop out account sidebar. They prove UI state, not content quality or learning improvement.
+
+Final privacy UI addition: npm test 441/441; npm run type-check PASS; npm run build PASS (chunk-size warning only).
+Local frontend Docker image rebuilt and restarted; app and user data were not replaced.
+Browser privacy check: both new buttons visible; clear dialog states irreversible, caller/KB scope and retained tracking. No clear request was confirmed.
+Final packaging: 2026-09-11.

@@ -1,0 +1,882 @@
+{
+  "schema": 1,
+  "seed": 20260910,
+  "sampling": "15 mapping pairs per KB; census of active non-stale bank items",
+  "scope": "Public RAG tutorial and d2l-zh computer-vision material only. No user learning records.",
+  "stats": [
+    {
+      "kb": "KB1",
+      "concepts": 30,
+      "with_refs": 30,
+      "reference_pairs": 82,
+      "resolvable_enabled_pairs": 82,
+      "distinct_chunks": 47,
+      "fanout_histogram": {
+        "1": 27,
+        "2": 11,
+        "3": 7,
+        "4": 1,
+        "8": 1
+      },
+      "max_fanout": 8
+    },
+    {
+      "kb": "KB2",
+      "concepts": 97,
+      "with_refs": 97,
+      "reference_pairs": 1243,
+      "resolvable_enabled_pairs": 1243,
+      "distinct_chunks": 845,
+      "fanout_histogram": {
+        "1": 549,
+        "2": 226,
+        "3": 48,
+        "4": 17,
+        "5": 3,
+        "7": 1,
+        "8": 1
+      },
+      "max_fanout": 8
+    }
+  ],
+  "mappings": [
+    {
+      "id": "M01",
+      "kb": "KB1",
+      "concept": "虚拟环境创建与激活",
+      "concept_summary": "本页面介绍使用 Conda 创建名为 all-in-rag、Python 3.12.7 的虚拟环境、激活该环境并安装项目依赖的完整流程。",
+      "document": "02_preparation.md",
+      "source": "### 3.4 创建并激活虚拟环境\n\n1.  **创建虚拟环境**\n\n    ```bash\n    conda create --name all-in-rag python=3.12.7\n    ```\n\n    出现选项直接回车即可。\n\n2.  **配置文件权限**\n\n    ```bash\n    sudo chown -R ubuntu:ubuntu code models\n    ```\n\n3.  **激活虚拟环境**\n\n    使用以下命令激活虚拟环境：\n\n    ```bash\n    conda activate all-in-rag\n    ```\n\n4.  **依赖安装**\n    如果严格安装上述流程当前应该在项目根目录，进入code目录安装依赖库\n\n    ",
+      "source_sha256": "1bb5e48f13d8ec093b5d40ce3f977a60d4d1304cea37a446288cfb9f26cec632",
+      "resolvable": true
+    },
+    {
+      "id": "M02",
+      "kb": "KB1",
+      "concept": "查询转换",
+      "concept_summary": "查询转换是模块化 RAG 中的一种关键技术，通过对查询进行多角度变换以增强召回能力。",
+      "document": "01_RAG_intro.md",
+      "source": "只要这个思想或需求不变，无论我们为其增加多少模块——查询转换、多路召回或者自我修正等等，它本质上依然是在这个框架下的演进。\n\n所以，“RAG 已死”是一个伪命题。相反，**RAG 作为一个概念活得很好**，它正在像 Transformer 一样，成为一个不断吸收新技术、不断进化的基础架构范式。它的生命力，正在于它的“面目全非”和“包罗万象”。而**本教程的目标，就是绘制出这张描绘 RAG 全貌的清晰地图，当我们可以解构它的每一个模块、理解它的每一种可能性时，RAG 也好，LKE 也罢，这些都无关紧要**。我们要做的就是通过 RAG 这道经典例题来学习和拓展（将 LLM 的内在参数化知识与外部非参数化知识相结合）这类题型的解题思路。\n\n> RAG 技术仍在快速发展中，可以持续关注学术和工业界的最新进展！\n\n",
+      "source_sha256": "9e320a076cb71b1ab006852f1334a3913d1f93272d90aa7e9ee7b1b4e299a19b",
+      "resolvable": true
+    },
+    {
+      "id": "M03",
+      "kb": "KB1",
+      "concept": "API 密钥配置",
+      "concept_summary": "介绍将大模型 API 密钥通过环境变量写入系统或 shell 配置文件，以便程序调用的配置过程与方法。",
+      "document": "02_preparation.md",
+      "source": "    > 不要带 `[]`\n\n3.  保存并退出 在 vim 中，按 Esc 键进入命令模式，然后输入 `:wq` 并按 Enter 键保存文件并退出。\n\n4.  使配置生效 执行以下命令来立即加载更新后的配置，让环境变量生效：\n\n    ```bash\n    source ~/.bashrc\n    ```\n\n",
+      "source_sha256": "f5065e12bebf758545693411a419058c306c8dbd9b8c5e6ffd55529524c55bfe",
+      "resolvable": true
+    },
+    {
+      "id": "M04",
+      "kb": "KB1",
+      "concept": "模块化RAG",
+      "concept_summary": "模块化RAG 是 RAG 技术演进的第三阶段，采用积木式可编排流程，支持模块化、可组合、可动态调整的架构。",
+      "document": "01_RAG_intro.md",
+      "source": "    <td style=\"text-align: center;\">基础线性流程</td>\n    <td style=\"text-align: center;\">增加<strong>检索前后</strong>的优化步骤</td>\n    <td style=\"text-align: center;\">模块化、可组合、可动态调整</td>\n  </tr>\n  <tr>\n    <td style=\"text-align: center;\"><strong>关键技术</strong></td>\n    <td style=\"text-align: center;\">基础向量检索</td>\n",
+      "source_sha256": "ddfc4dd7f02386acdc039fdeda2bf0f2263cbc139bd57a6e76ea9df29f667f82",
+      "resolvable": true
+    },
+    {
+      "id": "M05",
+      "kb": "KB1",
+      "concept": "提示词模板",
+      "concept_summary": "提示词模板是用于指导大型语言模型生成回答的结构化文本模板，包含上下文和问题的占位符。",
+      "document": "03_get_start_rag.md",
+      "source": "此模板指导LLM根据提供的上下文 (`context`) 回答用户的问题 (`question`)，并明确指出在信息不足时应如何回应。\n    ```python\n    prompt = ChatPromptTemplate.from_template(\"\"\"请根据下面提供的上下文信息来回答问题。\n    请确保你的回答完全基于这些上下文。\n    如果上下文中没有足够的信息来回答问题，请直接告知：“抱歉，我无法根据提供的上下文找到相关信息来回答此问题。”\n    \n    上下文:\n    {context}\n    \n    问题: {question}\n    \n    回答:\"\"\"\n                                              )\n    ```\n- **配置大语言模型**: 初始化 ",
+      "source_sha256": "b554186150c6479196450c942065572f6ba99c9f807bcc015dc98cbea7012998",
+      "resolvable": true
+    },
+    {
+      "id": "M06",
+      "kb": "KB1",
+      "concept": "检索相关性",
+      "concept_summary": "检索相关性是评估 RAG 系统检索阶段效果的维度，衡量检索到的内容是否包含答案。",
+      "document": "01_RAG_intro.md",
+      "source": "### 3.4 进阶与挑战\n\n当基础的 RAG 系统搭建完成后，下一步的进阶之路便聚焦于如何评估、诊断并突破其固有的瓶颈。\n\n（1）**评估维度与挑战**\n\n一套 RAG 系统的好坏，并不能仅凭感觉。业界通常会从几个维度进行量化评估，首先是**检索相关性**（找到的内容是否包含答案），其次是**生成质量**，这又可以细分为**语义准确性**（回答的意思是否正确）和**词汇匹配度**（专业术语是否使用得当）。\n\n这些评估维度也直接对应了 RAG 当前面临的主要挑战。比如，**检索依赖性**问题——如果检索系统召回了错误信息，再强的 LLM 也会“一本正经地胡说八道”。此外，对于需要跨多个文档进行综合分析的**多跳推理**问题，常见的 RAG 架构也普遍感到吃力。\n\n（2）**优化方向与架构演进**\n\n",
+      "source_sha256": "29a0fa1651247bb58ae0da2f036c730aa34a2f2d20624d00515d377f757d8ac4",
+      "resolvable": true
+    },
+    {
+      "id": "M07",
+      "kb": "KB1",
+      "concept": "RAG",
+      "concept_summary": "RAG 是一种将信息检索与大型语言模型生成相结合的技术，用于基于外部知识回答用户问题，可通过 LangChain 或 LlamaIndex 实现。",
+      "document": "03_get_start_rag.md",
+      "source": "## 三、基于 LangChain 框架的 RAG 实现\n\n在第一节中，我们提到四步构建最小可行系统分别是数据准备、索引构建、检索优化和生成集成。下面将围绕这四个方面来实现一个基于 LangChain 框架的 RAG 应用。\n\n> [本节完整代码](https://github.com/datawhalechina/all-in-rag/blob/main/code/C1/01_langchain_example.py)\n\n",
+      "source_sha256": "551d905c41509f4d9ea5189b2ec78ad8e09fd6bb37efa99c948408f6a2b7cfb6",
+      "resolvable": true
+    },
+    {
+      "id": "M08",
+      "kb": "KB1",
+      "concept": "非参数化知识",
+      "concept_summary": "非参数化知识是来自外部知识库的精准、可随时更新的外部数据，是 RAG 系统动态检索的信息来源。",
+      "document": "01_RAG_intro.md",
+      "source": "> -   **E（Expert）**：说明系统能像专家一样，通过路由、分析、融合、修正等一系列步骤，最终给出答案（**生成**）、解决问题。\n\n可以类比 **Transformer**。今天无论是以 GPT 为代表的 Decoder-only 还是以 BERT 为代表的 Encoder-only，我们都习惯称之为“基于 Transformer 架构”，尽管它们与最初论文中的完整形态差异巨大。但是 Transformer 这个标签抓住了一次技术范式的核心飞跃，并成为了一个技术时代的象征。同理，**RAG 的核心在于“将 LLM 的内在参数化知识与外部非参数化知识相结合”**。只要这个思想或需求不变，无论我们为其增加多少模块——查询转换、多路召回或者自我修正等等，它本质上依然是在这个框架下的演进。\n\n",
+      "source_sha256": "99d53b983fa4c19932d1d746b90451083d3bedea548e5b9cb803d414167a1b67",
+      "resolvable": true
+    },
+    {
+      "id": "M09",
+      "kb": "KB1",
+      "concept": "多路融合",
+      "concept_summary": "多路融合是模块化RAG中的关键技术，通过融合多个检索通路的结果来提升答案质量。",
+      "document": "01_RAG_intro.md",
+      "source": "但这种“换名游戏”，恰恰说明了“RAG 已死”论的表面化——这无异于在用一个新瓶子去装 RAG 这个不断陈化的老酒。\n\n> 笔者在此并非要创造一个新词，不过为什么要起 LKE 这个名字？它代表了三个核心要素：\n> -   **L（Large Language Model）**：强调系统的驱动力是大语言模型。\n> -   **K（Knowledge Management）**：寓意着系统就像一个知识管理员，精准地为我们找到（**检索**）所需要的知识，辅助我们后续利用大模型进行更高阶应用。\n> -   **E（Expert）**：说明系统能像专家一样，通过路由、分析、融合、修正等一系列步骤，最终给出答案（**生成**）、解决问题。\n\n",
+      "source_sha256": "ec1ef6bc94a47d428fdc95f0d8b5c6e84621242b06bf6a993ff3b4936fd45be3",
+      "resolvable": true
+    },
+    {
+      "id": "M10",
+      "kb": "KB1",
+      "concept": "微调",
+      "concept_summary": "微调是一种通过修改模型参数来调整模型行为的技术，是“提示词工程 → RAG → 微调”选型路径中的最后选择。",
+      "document": "01_RAG_intro.md",
+      "source": "### 2.1 技术选型：RAG vs. 微调\n\n在选择具体的技术路径时，一个重要的考量是成本与效益的平衡。通常，我们应优先选择对模型改动最小、成本最低的方案，所以技术选型路径往往遵循的顺序是**提示词工程（Prompt Engineering） -> 检索增强生成 -> 微调（Fine-tuning）**。\n\n我们可以从两个维度来理解这些技术的区别。如图 1-3 所示，**横轴代表“LLM 优化”**，即对模型本身进行多大程度的修改。从左到右，优化的程度越来越深，其中提示工程和 RAG 完全不改变模型权重，而微调则直接修改模型参数。**纵轴代表“上下文优化”**，是对输入给模型的信息进行多大程度的增强。从下到上，增强的程度越来越高，其中提示工程只是优化提问方式，而 RAG 则通过引入外部知识库，极大地丰富了上下文信息。\n\n",
+      "source_sha256": "87944cf418faf7d3080070c4b4b28f4fd7f5abc13873a71ee2f4dc38c3a1480e",
+      "resolvable": true
+    },
+    {
+      "id": "M11",
+      "kb": "KB1",
+      "concept": "模块化RAG",
+      "concept_summary": "模块化RAG 是 RAG 技术演进的第三阶段，采用积木式可编排流程，支持模块化、可组合、可动态调整的架构。",
+      "document": "01_RAG_intro.md",
+      "source": "  </tr>\n  <tr>\n    <td style=\"text-align: center;\"><strong>局限性</strong></td>\n    <td style=\"text-align: center;\">效果不稳定，难以优化</td>\n    <td style=\"text-align: center;\">流程相对固定，优化点有限</td>\n    <td style=\"text-align: center;\">系统复杂性高</td>\n  </tr>\n</table>\n<p><em>表 1-1 RAG 技术演进分类对比</em></p>\n</div>\n\n> “离线”指提前完成的数据预处理工作（如索引构建）；“在线”指用户发起请求后的实时处理流程。\n\n",
+      "source_sha256": "10ff962d22abc33f191003640e0f22670e629b510851d7615509869fc297bfbe",
+      "resolvable": true
+    },
+    {
+      "id": "M12",
+      "kb": "KB1",
+      "concept": "多模态扩展",
+      "concept_summary": "多模态扩展是一种扩展 RAG 能力边界的技术，支持图像、表格等多种数据类型的检索。",
+      "document": "01_RAG_intro.md",
+      "source": "（2）**优化方向与架构演进**\n\n针对上述挑战，社区探索出了多种优化路径。在**性能层面**，可以通过**索引分层**（对高频数据启用缓存）和**多模态扩展**（支持图像/表格检索）来提升效率和能力边界。而在**架构层面**，简单的线性流程正在被更复杂的**设计模式**所取代。例如，系统可以通过**分支模式**并行处理多路检索，或通过**循环模式**进行自我修正，这些灵活的架构是通往更智能 RAG 的必由之路。\n\n",
+      "source_sha256": "e99660120b956093965fc716ccf0fa6bb2fe4c2ae6dc71816d60339ef3405b77",
+      "resolvable": true
+    },
+    {
+      "id": "M13",
+      "kb": "KB1",
+      "concept": "虚拟环境创建与激活",
+      "concept_summary": "本页面介绍使用 Conda 创建名为 all-in-rag、Python 3.12.7 的虚拟环境、激活该环境并安装项目依赖的完整流程。",
+      "document": "02_preparation.md",
+      "source": "4.  **依赖安装**\n    如果严格安装上述流程当前应该在项目根目录，进入code目录安装依赖库\n\n    ```bash\n    cd code\n    pip install -r requirements.txt\n    ```\n\n    > 如果出现关于grpcio的版本错误无需在意。\n\n",
+      "source_sha256": "1217d92d0787aae9ab0505641a3aa7a3febb7f16f9559db4acf906b70f8cb2d5",
+      "resolvable": true
+    },
+    {
+      "id": "M14",
+      "kb": "KB1",
+      "concept": "幻觉",
+      "concept_summary": "幻觉指大语言模型生成看似合理但实际错误内容的现象，RAG 通过基于检索内容生成来降低其发生率。",
+      "document": "01_RAG_intro.md",
+      "source": "### 3.4 进阶与挑战\n\n当基础的 RAG 系统搭建完成后，下一步的进阶之路便聚焦于如何评估、诊断并突破其固有的瓶颈。\n\n（1）**评估维度与挑战**\n\n一套 RAG 系统的好坏，并不能仅凭感觉。业界通常会从几个维度进行量化评估，首先是**检索相关性**（找到的内容是否包含答案），其次是**生成质量**，这又可以细分为**语义准确性**（回答的意思是否正确）和**词汇匹配度**（专业术语是否使用得当）。\n\n这些评估维度也直接对应了 RAG 当前面临的主要挑战。比如，**检索依赖性**问题——如果检索系统召回了错误信息，再强的 LLM 也会“一本正经地胡说八道”。此外，对于需要跨多个文档进行综合分析的**多跳推理**问题，常见的 RAG 架构也普遍感到吃力。\n\n（2）**优化方向与架构演进**\n\n",
+      "source_sha256": "29a0fa1651247bb58ae0da2f036c730aa34a2f2d20624d00515d377f757d8ac4",
+      "resolvable": true
+    },
+    {
+      "id": "M15",
+      "kb": "KB1",
+      "concept": "结果重排",
+      "concept_summary": "结果重排是高级RAG中检索后优化技术，通过对初步检索结果进行二次排序以提升相关性。",
+      "document": "01_RAG_intro.md",
+      "source": "    <td style=\"text-align: center;\">基础向量检索</td>\n    <td style=\"text-align: center;\"><strong>查询重写（Query Rewrite）</strong><br><strong>结果重排（Rerank）</strong></td>\n    <td style=\"text-align: center;\"><strong>动态路由（Routing）</strong><br><strong>查询转换（Query Transformation）</strong><br><strong>多路融合（Fusion）</strong></td>\n  </tr>\n  <tr>\n",
+      "source_sha256": "45920d11a154e217806d17166ed1ee78f76eb8d2cd7b2a058c138f57051cae52",
+      "resolvable": true
+    },
+    {
+      "id": "M16",
+      "kb": "KB2",
+      "concept": "内容图像",
+      "concept_summary": "内容图像是风格迁移中输入的两张图像之一，提供需保留的物体主体形状和内容特征。",
+      "document": "neural-style.md",
+      "source": "output = train(content_X, contents_Y, styles_Y, 0.3, 500, 50)\n```\n\n我们可以看到，合成图像保留了内容图像的风景和物体，并同时迁移了风格图像的色彩。例如，合成图像具有与风格图像中一样的色彩块，其中一些甚至具有画笔笔触的细微纹理。\n\n## 小结\n\n* 风格迁移常用的损失函数由3部分组成：（1）内容损失使合成图像与内容图像在内容特征上接近；（2）风格损失令合成图像与风格图像在风格特征上接近；（3）全变分损失则有助于减少合成图像中的噪点。\n* 我们可以通过预训练的卷积神经网络来抽取图像的特征，并通过最小化损失函数来不断更新合成图像来作为模型参数。\n* 我们使用格拉姆矩阵表达风格层输出的风格。\n\n## 练习\n\n",
+      "source_sha256": "b3549c2cb4a23366c0d7dc4132cd5369a1ee5ea0f67f2c4f8f5cd4a5813fdd5c",
+      "resolvable": true
+    },
+    {
+      "id": "M17",
+      "kb": "KB2",
+      "concept": "数据组织与验证集划分",
+      "concept_summary": "数据组织与验证集划分涉及将原始训练数据按比例划分验证集并按标签组织图像文件的方法，具体以Kaggle狗品种识别竞赛为例说明。",
+      "document": "kaggle-dog_origin.md",
+      "source": "## Obtaining and Organizing the Dataset\n\nThe competition dataset is divided into a training set and a test set, which contain 10222 and 10357 JPEG images\nof three RGB (color) channels, respectively.\nAmong the training dataset,\nthere are 120 breeds of dogs\nsuch as Labradors, Poodles, Dachshunds, Samoyeds, Huskies, Chihuahuas, and Yorkshire Terriers.\n\n\n",
+      "source_sha256": "413c1f44cf6c785b30b33db51aea4496f54687936bee789ae341bf2c0dd5dfbd",
+      "resolvable": true
+    },
+    {
+      "id": "M18",
+      "kb": "KB2",
+      "concept": "双线性插值",
+      "concept_summary": "双线性插值是一种常用的图像上采样技术，通过输入图像上最近四个像素及其相对距离计算输出像素值，也常用于初始化转置卷积层。",
+      "document": "fcn.md",
+      "source": "## 小结\n\n* 全卷积网络先使用卷积神经网络抽取图像特征，然后通过$1\\times 1$卷积层将通道数变换为类别个数，最后通过转置卷积层将特征图的高和宽变换为输入图像的尺寸。\n* 在全卷积网络中，我们可以将转置卷积层初始化为双线性插值的上采样。\n\n## 练习\n\n1. 如果将转置卷积层改用Xavier随机初始化，结果有什么变化？\n1. 调节超参数，能进一步提升模型的精度吗？\n1. 预测测试图像中所有像素的类别。\n1. 最初的全卷积网络的论文中 :cite:`Long.Shelhamer.Darrell.2015`还使用了某些卷积神经网络中间层的输出。试着实现这个想法。\n\n:begin_tab:`mxnet`\n[Discussions](https://discuss.d2l.ai/t/3298)\n:end_tab:\n\n:begin_tab:`pytorch`",
+      "source_sha256": "af1a3e7d3e2df4a1e3f5f145b009981d8a228648996370d9deb900f390db041e",
+      "resolvable": true
+    },
+    {
+      "id": "M19",
+      "kb": "KB2",
+      "concept": "多框检测",
+      "concept_summary": "多框检测是在预测阶段使用非极大值抑制处理多个锚框的预测结果，生成最终预测边界框和类别标签的方法。",
+      "document": "anchor.md",
+      "source": "        class_id[below_min_idx] = -1\n        conf[below_min_idx] = 1 - conf[below_min_idx]\n        pred_info = torch.cat((class_id.unsqueeze(1),\n                               conf.unsqueeze(1),\n                               predicted_bb), dim=1)\n        out.append(pred_info)\n    return d2l.stack(out)\n```\n\n```",
+      "source_sha256": "74c3c927ba8e6226eb68a1399244e403fa09e1d06dee357298d522f87825674b",
+      "resolvable": true
+    },
+    {
+      "id": "M20",
+      "kb": "KB2",
+      "concept": "锚框标注",
+      "concept_summary": "锚框标注是训练目标检测模型时将真实边界框分配给锚框并为其标记类别与偏移量的过程，涵盖分配算法、标签标记与示例。",
+      "document": "anchor_origin.md",
+      "source": "After that, we only need to traverse through\nthe remaining anchor boxes $A_1, A_3, A_4, A_6, A_8$ and determine whether to assign them ground-truth bounding boxes according to the threshold.\n\n![Assigning ground-truth bounding boxes to anchor boxes.](../img/anchor-label.svg)\n:label:`fig_anchor_label`\n\nThis algorithm is implemented in the following `assign_anchor_to_bbox` function.\n\n",
+      "source_sha256": "e606ed5a0e436afe2ef8994a52032812e879dd34fcee2a84b3d835d769574af9",
+      "resolvable": true
+    },
+    {
+      "id": "M21",
+      "kb": "KB2",
+      "concept": "类别预测层",
+      "concept_summary": "类别预测层是SSD中用于预测锚框类别的卷积层，通过保持特征图宽高的卷积输出通道降低模型复杂度。",
+      "document": "ssd_origin.md",
+      "source": "    return (Y, anchors, cls_preds, bbox_preds)\n```\n\n```{.python .input}\n#@tab pytorch\ndef blk_forward(X, blk, size, ratio, cls_predictor, bbox_predictor):\n    Y = blk(X)\n    anchors = d2l.multibox_prior(Y, sizes=size, ratios=ratio)\n    cls_preds = cls_predictor(Y)\n    bbox_preds = bbox_predictor(Y)\n    return (Y, anchors, cls_preds, bbox_preds)\n",
+      "source_sha256": "f6fd740ab2bd9de60233ad4693f95cba8efe16ac96fa37ae8d072fd53b9885a5",
+      "resolvable": true
+    },
+    {
+      "id": "M22",
+      "kb": "KB2",
+      "concept": "图像增广",
+      "concept_summary": "图像增广是一种通过对训练图像进行随机变换生成相似但不同样本，以扩大训练集并提升模型泛化能力的技术。",
+      "document": "image-augmentation.md",
+      "source": "img = d2l.Image.open('../img/cat1.jpg')\nd2l.plt.imshow(img);\n```\n\n大多数图像增广方法都具有一定的随机性。为了便于观察图像增广的效果，我们下面定义辅助函数`apply`。\n此函数在输入图像`img`上多次运行图像增广方法`aug`并显示所有结果。\n\n```{.python .input}\n#@tab all\ndef apply(img, aug, num_rows=2, num_cols=4, scale=1.5):\n    Y = [aug(img) for _ in range(num_rows * num_cols)]\n    d2l.show_images(Y, num_rows, num_cols, scale=scale)\n```\n\n",
+      "source_sha256": "15a65deb6dd6db882a5404d1d50548e1a4550ebe9d368c4185397558e731c7e3",
+      "resolvable": true
+    },
+    {
+      "id": "M23",
+      "kb": "KB2",
+      "concept": "交并比",
+      "concept_summary": "交并比（IoU）是衡量两个边界框相似度的指标，定义为两框相交面积与相并面积之比，取值在0到1之间。",
+      "document": "anchor_origin.md",
+      "source": ":label:`fig_iou`\n\nFor the remainder of this section, we will use IoU to measure the similarity between anchor boxes and ground-truth bounding boxes, and between different anchor boxes.\nGiven two lists of anchor or bounding boxes,\nthe following `box_iou`",
+      "source_sha256": "e1e271adbe88cb86417e3e48103e842390374d0a7476c0f2b6155e8a854d17d0",
+      "resolvable": true
+    },
+    {
+      "id": "M24",
+      "kb": "KB2",
+      "concept": "目标模型",
+      "concept_summary": "目标模型是迁移学习中为适应目标任务而创建的新神经网络模型，复制源模型除输出层外的设计和参数。",
+      "document": "fine-tuning_origin.md",
+      "source": "; thus it is not used in the target model.\n1. Add an output layer to the target model, whose number of outputs is the number of categories in the target dataset. Then randomly initialize the model parameters of this layer.\n",
+      "source_sha256": "81fb28b66e5aa95493425166f7d20acf0ac2049f8290476a9c1ffcb249ccbfc6",
+      "resolvable": true
+    },
+    {
+      "id": "M25",
+      "kb": "KB2",
+      "concept": "内容层",
+      "concept_summary": "内容层是预训练卷积神经网络中用于输出内容特征的层，通常选择较靠近输出的层。",
+      "document": "neural-style.md",
+      "source": "#@tab paddle\npretrained_net = paddlevision.models.vgg19(pretrained=True)\n```\n\n为了抽取图像的内容特征和风格特征，我们可以选择VGG网络中某些层的输出。\n一般来说，越靠近输入层，越容易抽取图像的细节信息；反之，则越容易抽取图像的全局信息。\n为了避免合成图像过多保留内容图像的细节，我们选择VGG较靠近输出的层，即*内容层*，来输出图像的内容特征。\n我们还从VGG中选择不同层的输出来匹配局部和全局的风格，这些图层也称为*风格层*。\n正如 :numref:`sec_vgg`中所介绍的，VGG网络使用了5个卷积块。\n实验中，我们选择第四卷积块的最后一个卷积层作为内容层，选择每个卷积块的第一个卷积层作为风格层。\n这些层的索引可以通过打印`pretrained_net`实例获取。\n\n```",
+      "source_sha256": "267be642a8e5512638b5d6a3de084c49770890a20169d1f712854f3dfc74fad0",
+      "resolvable": true
+    },
+    {
+      "id": "M26",
+      "kb": "KB2",
+      "concept": "图像分类",
+      "concept_summary": "图像分类是将输入图像分配到预定义类别中的计算机视觉任务，并以 CIFAR-10 Kaggle 竞赛为例展示完整流程。",
+      "document": "kaggle-cifar10.md",
+      "source": "for X, _ in test_iter:\n    y_hat = net(X.as_in_ctx(devices[0]))\n    preds.extend(y_hat.argmax(axis=1).astype(int).asnumpy())\nsorted_ids = list(range(1, len(test_ds) + 1))\nsorted_ids.sort(key=lambda x: str(x))\ndf = pd.DataFrame({'id': sorted_ids, 'label': preds})\ndf['label'] = df['label'].apply(lambda x: train_valid_ds.synsets[x])\ndf.to_csv('submission.csv', index=False)\n```\n\n```",
+      "source_sha256": "7f38e567fb2b0d472c9ccda777925ed06bd707658580e8d3d947caaa308d30ab",
+      "resolvable": true
+    },
+    {
+      "id": "M27",
+      "kb": "KB2",
+      "concept": "多尺度目标检测",
+      "concept_summary": "多尺度目标检测是利用不同尺度特征图和锚框检测不同大小目标的方法，涵盖多尺度锚框生成、多尺度检测及SSD模型应用。",
+      "document": "ssd_origin.md",
+      "source": "```\n\nRecall that \nin :numref:`fig_ssd`\na multiscale feature map block\nthat is closer to the top\nis for detecting larger objects;\nthus, it needs to generate larger anchor boxes.\nIn the above forward propagation,\nat each multiscale feature map block\nwe pass in a list of two scale values\nvia the `sizes` argument\nof the invoked `multibox_prior` function (described in :numref:`sec_anchor`).\nIn the following,\nthe interval between 0.2 and 1.05\nis split evenly\ninto five sections to determine the\nsmaller scale values at the five blocks: 0.2, 0.37, 0.54, 0.71, and 0.88.\nThen their larger scale values\nare given by\n$\\sqrt{0.2 \\times 0.37} = 0.272$, $\\sqrt{0.37 \\times 0.54} = 0.447$, and so on.\n\n```",
+      "source_sha256": "4f369ba6b0170081f2ee8a24c591576671e195468723cc89a9078238aa92670f",
+      "resolvable": true
+    },
+    {
+      "id": "M28",
+      "kb": "KB2",
+      "concept": "实例分割",
+      "concept_summary": "实例分割是识别图像中各个目标实例像素级区域的计算机视觉任务，不仅区分语义，还区分不同目标实例。",
+      "document": "semantic-segmentation-and-dataset.md",
+      "source": "它在训练时不需要有关图像像素的标签信息，在预测时也无法保证分割出的区域具有我们希望得到的语义。以 :numref:`fig_segmentation`中的图像作为输入，图像分割可能会将狗分为两个区域：一个覆盖以黑色为主的嘴和眼睛，另一个覆盖以黄色为主的其余部分身体。\n* *实例分割*也叫*同时检测并分割*（simultaneous detection and segmentation），它研究如何识别图像中各个目标实例的像素级区域。与语义分割不同，实例分割不仅需要区分语义，还要区分不同的目标实例。例如，如果图像中有两条狗，则实例分割需要区分像素属于的两条狗中的哪一条。\n\n",
+      "source_sha256": "876aaa20c260974800a9543c7e8e2371fb512c230d49c9767a9e163452918ae5",
+      "resolvable": true
+    },
+    {
+      "id": "M29",
+      "kb": "KB2",
+      "concept": "微调",
+      "concept_summary": "微调是一种迁移学习技巧，通过在目标数据集上继续训练预训练模型来适应新任务，通常使用较小学习率并从头训练新输出层。",
+      "document": "fine-tuning_origin.md",
+      "source": "3. Set the parameters before the output layer of `finetune_net` to those of the source model and do *not* update them during training. How does the accuracy of the model change? You can use the following code.\n\n```{.python .input}\nfinetune_net.features.collect_params().setattr('grad_req', 'null')\n```\n\n```",
+      "source_sha256": "ad2e0665a46b9e7a89281cf19d7a4b3ce766921bfbe9a910452b242e93e26176",
+      "resolvable": true
+    },
+    {
+      "id": "M30",
+      "kb": "KB2",
+      "concept": "格拉姆矩阵",
+      "concept_summary": "格拉姆矩阵由风格层输出向量的内积构成，用于表达风格层输出的风格，并在风格损失中除以元素个数以避免数值过大。",
+      "document": "neural-style_origin.md",
+      "source": "each of which has a length of $hw$. \nHere, vector $\\mathbf{x}_i$ represents the style feature of channel $i$. \n\nIn the *Gram matrix* of these vectors $\\mathbf{X}\\mathbf{X}^\\top \\in \\mathbb{R}^{c \\times c}$, element $x_{ij}$ in row $i$ and column $j$ is the inner product of vectors $\\mathbf{x}_i$ and $\\mathbf{x}_j$.\n",
+      "source_sha256": "cddfb29bd39959f282b642f50884b87faaa2612e66f8e6ae7f32c76c931703b2",
+      "resolvable": true
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "Q01",
+      "kb": "KB1",
+      "concept": "文本分块",
+      "question": "使用 RecursiveCharacterTextSplitter 时，默认情况下分隔符是否会被保留在分割后的文本块中？",
+      "options": [
+        "不会保留，默认行为是删除分隔符",
+        "会保留，默认行为是保留分隔符",
+        "只有在分隔符为换行符时才会保留",
+        "只有在分隔符为空格时才会保留"
+      ],
+      "correct_option": 1,
+      "explanation": "源块指出，默认情况下 (`keep_separator=True`)，分隔符本身会被保留在分割后的文本块中。",
+      "source_hash": "60aa3b0ff69192fd3377d9cc97370c9f39f2c276509a60aa85c46677e1b29a82",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "这里采用了递归字符分割策略，使用其默认参数进行分块。当不指定参数初始化 `RecursiveCharacterTextSplitter()` 时，其默认行为旨在最大程度保留文本的语义结构：\n    - **默认分隔符与语义保留**: 按顺序尝试使用一系列预设的分隔符 `[\"\\n\\n\" (段落), \"\\n\" (行), \" \" (空格), \"\" (字符)]` 来递归分割文本。这种策略的目的是尽可能保持段落、句子和单词的完整性，因为它们通常是语义上最相关的文本单元，直到文本块达到目标大小。\n    - **保留分隔符**: 默认情况下 (`keep_separator=True`)，分隔符本身会被保留在分割后的文本块中。\n    - **默认块大小与重叠**: 使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000`"
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "kb": "KB2",
+      "concept": "语义分割",
+      "question": "在语义分割的可视化过程中，label2image函数的作用是什么？",
+      "options": [
+        "将预测的类别索引映射回数据集中对应的标注颜色",
+        "将图像转换为灰度图",
+        "将标签转换为边界框",
+        "将像素颜色转换为类别概率"
+      ],
+      "correct_option": 0,
+      "explanation": "源码块56b7dab6中注释明确说明：为了可视化预测的类别给每个像素，将预测类别映射回它们在数据集中的标注颜色。",
+      "source_hash": "fccb75feb73edcce1941eeaadfa7d75558c0877a876ec638c44a29fee77af3b7",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "fcn.md",
+          "content": "```\n\n为了[**可视化预测的类别**]给每个像素，我们将预测类别映射回它们在数据集中的标注颜色。\n\n```{.python .input}\ndef label2image(pred):\n    colormap = np.array(d2l.VOC_COLORMAP, ctx=devices[0], dtype='uint8')\n    X = pred.astype('int32')\n    return colormap[X, :]\n```\n\n```"
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "kb": "KB1",
+      "concept": "文本分块",
+      "question": "递归字符分割策略依次尝试段落、行、空格、字符分隔符的目的是什么？",
+      "options": [
+        "为了尽可能减小文本块的大小",
+        "为了尽可能保持段落、句子和单词的完整性，以保留语义结构",
+        "为了删除文本中的标点符号",
+        "为了将文本转换为单个字符"
+      ],
+      "correct_option": 1,
+      "explanation": "源块指出，这种策略的目的是尽可能保持段落、句子和单词的完整性，因为它们通常是语义上最相关的文本单元，直到文本块达到目标大小。",
+      "source_hash": "60aa3b0ff69192fd3377d9cc97370c9f39f2c276509a60aa85c46677e1b29a82",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "这里采用了递归字符分割策略，使用其默认参数进行分块。当不指定参数初始化 `RecursiveCharacterTextSplitter()` 时，其默认行为旨在最大程度保留文本的语义结构：\n    - **默认分隔符与语义保留**: 按顺序尝试使用一系列预设的分隔符 `[\"\\n\\n\" (段落), \"\\n\" (行), \" \" (空格), \"\" (字符)]` 来递归分割文本。这种策略的目的是尽可能保持段落、句子和单词的完整性，因为它们通常是语义上最相关的文本单元，直到文本块达到目标大小。\n    - **保留分隔符**: 默认情况下 (`keep_separator=True`)，分隔符本身会被保留在分割后的文本块中。\n    - **默认块大小与重叠**: 使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000`"
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "kb": "KB1",
+      "concept": "RAG",
+      "question": "根据资料，在四步构建 RAG 的过程中，启动虚拟环境时创建的环境名称是什么？",
+      "options": [
+        "all-in-rag",
+        "rag-environment",
+        "langchain-env",
+        "llamaindex-env"
+      ],
+      "correct_option": 0,
+      "explanation": "资料中明确提到假设已经按照前一章节的指导，创建了名为 all-in-rag 的虚拟环境，因此环境名称是 all-in-rag。",
+      "source_hash": "ca7723f01d3faf3c640d840c17e44b86d53c77f6f44358e909772f322cc66792",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "# 第三节 四步构建RAG\n\n通过第一节的学习，我们对RAG已经有了基本认识，并且也准备好了虚拟环境和api_key，接下来将尝试使用[**LangChain**](https://python.langchain.com/docs/introduction/)和[**LlamaIndex**](https://docs.llamaindex.ai/en/stable/)框架完成第一个RAG应用的实现与运行。通过一个示例，演示如何加载本地Markdown文档，利用嵌入模型处理文本，并结合大型语言模型（LLM）来回答与文档内容相关的问题。\n\n## 一、启动虚拟环境\n\n### 1.1 激活虚拟环境\n\n假设已经按照前一章节的指导，创建了名为 `all-in-rag`"
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "kb": "KB2",
+      "concept": "目标检测",
+      "question": "在目标检测任务中，数据标签与图像分类任务的主要区别是什么？",
+      "options": [
+        "目标检测的标签包含真实边界框信息",
+        "目标检测的标签只包含类别名称",
+        "目标检测的标签包含像素级掩码",
+        "目标检测的标签不包含任何位置信息"
+      ],
+      "correct_option": 0,
+      "explanation": "源块明确指出，在目标检测中，标签还包含真实边界框的信息，而这一点不出现在图像分类中。",
+      "source_hash": "ad61327b90673a2573db35c398f14171df091a673474a79c3bfb4c28871ae0d0",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "object-detection-dataset.md",
+          "content": "## 小结\n\n* 我们收集的香蕉检测数据集可用于演示目标检测模型。\n* 用于目标检测的数据加载与图像分类的数据加载类似。但是，在目标检测中，标签还包含真实边界框的信息，它不出现在图像分类中。\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "kb": "KB1",
+      "concept": "嵌入模型",
+      "question": "在 RAG 系统中，以下哪个代码片段正确设置了嵌入模型？",
+      "options": [
+        "Settings.embed_model = HuggingFaceEmbedding(\"BAAI/bge-small-zh-v1.5\")",
+        "Settings.llm = HuggingFaceEmbedding(\"BAAI/bge-small-zh-v1.5\")",
+        "Settings.embed_model = OpenAILike(model=\"glm-4.7-flash-free\")",
+        "Settings.embed_model = SimpleDirectoryReader(input_files=[\"data.md\"])"
+      ],
+      "correct_option": 0,
+      "explanation": "源区块代码中 `Settings.embed_model = HuggingFaceEmbedding(\"BAAI/bge-small-zh-v1.5\")` 正确设置了嵌入模型，而其他选项错误地使用了 llm、OpenAILike 或 SimpleDirectoryReader。",
+      "source_hash": "1048e7ab298bd4d0ac4e61b54feacf00b65c8243e0d2b0b6701f444b12f47edd",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "```python\nimport os\n# os.environ['HF_ENDPOINT']='https://hf-mirror.com'\nfrom dotenv import load_dotenv\nfrom llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings \nfrom llama_index.llms.openai_like import OpenAILike\nfrom llama_index.embeddings.huggingface import HuggingFaceEmbedding\n\nload_dotenv()\n\nSettings.llm = OpenAILike(\n    model=\"glm-4.7-flash-free\",\n    api_key=os.getenv(\"DEEPSEEK_API_KEY\"),\n    api_base=\"https://aihubmix.com/v1\",\n    is_chat_model=True\n)\nSettings.embed_model = HuggingFaceEmbedding(\"BAAI/bge-small-zh-v1.5\")\n\ndocuments = SimpleDirectoryReader(input_files=[\"../../data/C1/markdown/easy-rl-chapter1.md\"]).load_data()\n\nindex = VectorStoreIndex.from_documents(documents)\n\nquery_engine = index.as_query_engine()\n\nprint(query_engine.get_prompts())\n\nprint(query_engine.query(\"文中举了哪些例子?\"))\n```"
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "kb": "KB2",
+      "concept": "语义分割",
+      "question": "根据源码，VOCSegDataset中语义分割标签的数据形状与图像分类或目标检测有什么不同？",
+      "options": [
+        "标签是一个三维数组",
+        "标签是一个标量",
+        "标签是一个二维数组",
+        "标签是一个四维数组"
+      ],
+      "correct_option": 0,
+      "explanation": "源码块da12d033明确指出：与图像分类或目标检测不同，这里的标签是一个三维数组。",
+      "source_hash": "fccb75feb73edcce1941eeaadfa7d75558c0877a876ec638c44a29fee77af3b7",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "semantic-segmentation-and-dataset.md",
+          "content": "```{.python .input}\n#@tab all\ncrop_size = (320, 480)\nvoc_train = VOCSegDataset(True, crop_size, voc_dir)\nvoc_test = VOCSegDataset(False, crop_size, voc_dir)\n```\n\n设批量大小为64，我们定义训练集的迭代器。\n打印第一个小批量的形状会发现：与图像分类或目标检测不同，这里的标签是一个三维数组。\n\n```"
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "kb": "KB1",
+      "concept": "RAG",
+      "question": "在基于 LangChain 框架实现 RAG 应用时，构建最小可行系统的四个步骤是什么？",
+      "options": [
+        "数据收集、模型训练、模型评估、模型部署",
+        "数据准备、索引构建、检索优化、生成集成",
+        "文本加载、文本分割、文本嵌入、文本生成",
+        "数据清洗、特征提取、模型选择、结果输出"
+      ],
+      "correct_option": 1,
+      "explanation": "资料在介绍基于 LangChain 框架的 RAG 实现时，明确指出四步构建最小可行系统分别是数据准备、索引构建、检索优化和生成集成。",
+      "source_hash": "ca7723f01d3faf3c640d840c17e44b86d53c77f6f44358e909772f322cc66792",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "## 三、基于 LangChain 框架的 RAG 实现\n\n在第一节中，我们提到四步构建最小可行系统分别是数据准备、索引构建、检索优化和生成集成。下面将围绕这四个方面来实现一个基于 LangChain 框架的 RAG 应用。\n\n> [本节完整代码](https://github.com/datawhalechina/all-in-rag/blob/main/code/C1/01_langchain_example.py)\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "kb": "KB1",
+      "concept": "嵌入模型",
+      "question": "在构建向量存储时，嵌入模型的作用是什么？",
+      "options": [
+        "将分割后的文本块转换为数值向量表示",
+        "直接回答用户的查询问题",
+        "存储原始文本而不做任何转换",
+        "生成文本摘要以替代原始文本"
+      ],
+      "correct_option": 0,
+      "explanation": "源区块指出“将分割后的文本块（texts）通过初始化好的嵌入模型转换为向量表示”，因此嵌入模型的作用是将文本转换为数值向量表示，而不是直接回答问题、存储原始文本或生成摘要。",
+      "source_hash": "1048e7ab298bd4d0ac4e61b54feacf00b65c8243e0d2b0b6701f444b12f47edd",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "    )\n    ```\n- **构建向量存储**: 将分割后的文本块 (`texts`) 通过初始化好的嵌入模型转换为向量表示，然后使用`InMemoryVectorStore`将这些向量及其对应的原始文本内容添加进去，从而在内存中构建出一个向量索引。\n    ```python\n    vectorstore = InMemoryVectorStore(embeddings)\n    vectorstore.add_documents(texts)\n    ```\n    这个过程完成后，便构建了一个可供查询的知识索引。\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "kb": "KB2",
+      "concept": "目标检测",
+      "question": "Mask R-CNN 相对于 Faster R-CNN 的主要改进是什么？",
+      "options": [
+        "引入了全卷积网络以利用像素级标签",
+        "用区域提议网络替代了选择性搜索",
+        "减少了区域提议的数量",
+        "引入了香蕉检测数据集"
+      ],
+      "correct_option": 0,
+      "explanation": "源块说明 Mask R-CNN 在 Faster R-CNN 的基础上额外引入了一个全卷积网络，以利用像素级标签进一步提升目标检测精度。",
+      "source_hash": "ad61327b90673a2573db35c398f14171df091a673474a79c3bfb4c28871ae0d0",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "rcnn.md",
+          "content": "## Mask R-CNN\n\n如果在训练集中还标注了每个目标在图像上的像素级位置，那么*Mask R-CNN* :cite:`He.Gkioxari.Dollar.ea.2017`能够有效地利用这些详尽的标注信息进一步提升目标检测的精度。\n\n![Mask R-CNN 模型](../img/mask-rcnn.svg)\n:label:`fig_mask_r-cnn`\n\n如 :numref:`fig_mask_r-cnn`"
+        },
+        {
+          "document": "rcnn_origin.md",
+          "content": "* Based on the faster R-CNN, the mask R-CNN additionally introduces a fully convolutional network, so as to leverage pixel-level labels to further improve the accuracy of object detection.\n\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "kb": "KB2",
+      "concept": "目标检测",
+      "question": "Faster R-CNN 如何改进 Fast R-CNN 的区域提议机制？",
+      "options": [
+        "使用联合训练的区域提议网络替代选择性搜索",
+        "使用全卷积网络替代选择性搜索",
+        "完全移除区域提议步骤",
+        "增加更多的选择性搜索区域"
+      ],
+      "correct_option": 0,
+      "explanation": "源块指出，Faster R-CNN 用联合训练的区域提议网络替换了 Fast R-CNN 中使用的选择性搜索，从而在减少区域提议数量的同时保持检测精度。",
+      "source_hash": "ad61327b90673a2573db35c398f14171df091a673474a79c3bfb4c28871ae0d0",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "rcnn_origin.md",
+          "content": "* The faster R-CNN replaces the selective search used in the fast R-CNN with a jointly trained region proposal network, so that the former can stay accurate in object detection with a reduced number of region proposals.\n"
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "kb": "KB1",
+      "concept": "文本分块",
+      "question": "不指定参数初始化 RecursiveCharacterTextSplitter 时，默认的 chunk_size 和 chunk_overlap 分别是多少？",
+      "options": [
+        "chunk_size=1000, chunk_overlap=100",
+        "chunk_size=2000, chunk_overlap=200",
+        "chunk_size=4000, chunk_overlap=200",
+        "chunk_size=4000, chunk_overlap=400"
+      ],
+      "correct_option": 2,
+      "explanation": "源块明确指出，使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000` 和 `chunk_overlap=200`。",
+      "source_hash": "60aa3b0ff69192fd3377d9cc97370c9f39f2c276509a60aa85c46677e1b29a82",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "    - **默认块大小与重叠**: 使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000`（块大小）和 `chunk_overlap=200`（块重叠）。这些参数确保文本块符合预定的大小限制，并通过重叠来减少上下文信息的丢失。\n    ```python\n    text_splitter = RecursiveCharacterTextSplitter()\n    texts = text_splitter.split_documents(docs)\n    ```\n\n"
+        },
+        {
+          "document": "03_get_start_rag.md",
+          "content": "这里采用了递归字符分割策略，使用其默认参数进行分块。当不指定参数初始化 `RecursiveCharacterTextSplitter()` 时，其默认行为旨在最大程度保留文本的语义结构：\n    - **默认分隔符与语义保留**: 按顺序尝试使用一系列预设的分隔符 `[\"\\n\\n\" (段落), \"\\n\" (行), \" \" (空格), \"\" (字符)]` 来递归分割文本。这种策略的目的是尽可能保持段落、句子和单词的完整性，因为它们通常是语义上最相关的文本单元，直到文本块达到目标大小。\n    - **保留分隔符**: 默认情况下 (`keep_separator=True`)，分隔符本身会被保留在分割后的文本块中。\n    - **默认块大小与重叠**: 使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000`"
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "kb": "KB1",
+      "concept": "嵌入模型",
+      "question": "在初始化中文嵌入模型 BAAI/bge-small-zh-v1.5 时，启用归一化的参数是哪个？",
+      "options": [
+        "normalize_embeddings: True",
+        "device: cpu",
+        "model_name: BAAI/bge-small-zh-v1.5",
+        "is_chat_model: True"
+      ],
+      "correct_option": 0,
+      "explanation": "源区块中的代码 `encode_kwargs={'normalize_embeddings': True}` 明确说明启用嵌入归一化的参数是 `normalize_embeddings: True`。",
+      "source_hash": "1048e7ab298bd4d0ac4e61b54feacf00b65c8243e0d2b0b6701f444b12f47edd",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "### 3.3 索引构建\n\n数据准备完成后，接下来构建向量索引：\n\n- **初始化中文嵌入模型**: 使用`HuggingFaceEmbeddings`加载之前在初始化设置中下载的中文嵌入模型。配置模型在CPU上运行，并启用嵌入归一化 (`normalize_embeddings: True`)。\n    ```python\n    embeddings = HuggingFaceEmbeddings(\n        model_name=\"BAAI/bge-small-zh-v1.5\",\n        model_kwargs={'device': 'cpu'},\n        encode_kwargs={'normalize_embeddings': True}\n    )\n    ```\n- **构建向量存储**: 将分割后的文本块 ("
+        }
+      ]
+    },
+    {
+      "id": "Q14",
+      "kb": "KB2",
+      "concept": "边界框",
+      "question": "在目标检测中，标签与图像分类任务中的标签有何不同？",
+      "options": [
+        "目标检测的标签还包含真实边界框的信息",
+        "目标检测的标签只包含类别信息",
+        "目标检测的标签不包含任何位置信息",
+        "目标检测的标签与图像分类完全相同"
+      ],
+      "correct_option": 0,
+      "explanation": "根据源数据，在目标检测中，标签还包含真实边界框的信息，它不出现在图像分类中。",
+      "source_hash": "a432583987108a4164ec9902e5a1cfed85b1f15f75a7f7830824a1f83dacc6e2",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "object-detection-dataset.md",
+          "content": "## 小结\n\n* 我们收集的香蕉检测数据集可用于演示目标检测模型。\n* 用于目标检测的数据加载与图像分类的数据加载类似。但是，在目标检测中，标签还包含真实边界框的信息，它不出现在图像分类中。\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q15",
+      "kb": "KB2",
+      "concept": "目标检测",
+      "question": "以下哪项最能说明 Mask R-CNN 需要什么样的训练标注？",
+      "options": [
+        "每个目标在图像上的像素级位置",
+        "仅类别标签",
+        "仅边界框",
+        "仅选择性搜索区域"
+      ],
+      "correct_option": 0,
+      "explanation": "源块说明，如果训练集中还标注了每个目标在图像上的像素级位置，Mask R-CNN 能够利用这些详尽的标注信息进一步提升精度，因此 Mask R-CNN 需要像素级标注。",
+      "source_hash": "ad61327b90673a2573db35c398f14171df091a673474a79c3bfb4c28871ae0d0",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "rcnn.md",
+          "content": "## Mask R-CNN\n\n如果在训练集中还标注了每个目标在图像上的像素级位置，那么*Mask R-CNN* :cite:`He.Gkioxari.Dollar.ea.2017`能够有效地利用这些详尽的标注信息进一步提升目标检测的精度。\n\n![Mask R-CNN 模型](../img/mask-rcnn.svg)\n:label:`fig_mask_r-cnn`\n\n如 :numref:`fig_mask_r-cnn`"
+        }
+      ]
+    },
+    {
+      "id": "Q16",
+      "kb": "KB2",
+      "concept": "语义分割",
+      "question": "在VOCSegDataset类中，__len__方法返回的是什么？",
+      "options": [
+        "特征的数量",
+        "标签的数量",
+        "图像的宽度",
+        "图像的通道数"
+      ],
+      "correct_option": 0,
+      "explanation": "源码块f4de8d9a中__len__方法返回len(self.features)，即特征的数量。",
+      "source_hash": "fccb75feb73edcce1941eeaadfa7d75558c0877a876ec638c44a29fee77af3b7",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "semantic-segmentation-and-dataset.md",
+          "content": "    def __len__(self):\n        return len(self.features)\n```\n\n```{.python .input}\n#@tab paddle\n#@save\nclass VOCSegDataset(paddle.io.Dataset):\n    \"\"\"一个用于加载VOC数据集的自定义数据集\n    Defined in :numref:`sec_semantic_segmentation`"
+        }
+      ]
+    },
+    {
+      "id": "Q17",
+      "kb": "KB1",
+      "concept": "文本分块",
+      "question": "RecursiveCharacterTextSplitter 默认的分隔符尝试顺序是什么？",
+      "options": [
+        "先尝试字符，再尝试空格、行、段落",
+        "先尝试段落，再依次尝试行、空格、字符",
+        "只使用段落分隔符进行分割",
+        "只使用空格分隔符进行分割"
+      ],
+      "correct_option": 1,
+      "explanation": "源块指出，默认按顺序尝试一系列预设的分隔符 `[\"\\n\\n\" (段落), \"\\n\" (行), \" \" (空格), \"\" (字符)]` 来递归分割文本，因此先段落、再行、再空格、最后字符。",
+      "source_hash": "60aa3b0ff69192fd3377d9cc97370c9f39f2c276509a60aa85c46677e1b29a82",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "这里采用了递归字符分割策略，使用其默认参数进行分块。当不指定参数初始化 `RecursiveCharacterTextSplitter()` 时，其默认行为旨在最大程度保留文本的语义结构：\n    - **默认分隔符与语义保留**: 按顺序尝试使用一系列预设的分隔符 `[\"\\n\\n\" (段落), \"\\n\" (行), \" \" (空格), \"\" (字符)]` 来递归分割文本。这种策略的目的是尽可能保持段落、句子和单词的完整性，因为它们通常是语义上最相关的文本单元，直到文本块达到目标大小。\n    - **保留分隔符**: 默认情况下 (`keep_separator=True`)，分隔符本身会被保留在分割后的文本块中。\n    - **默认块大小与重叠**: 使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000`"
+        }
+      ]
+    },
+    {
+      "id": "Q18",
+      "kb": "KB1",
+      "concept": "嵌入模型",
+      "question": "使用 InMemoryVectorStore 构建向量索引时，以下哪项描述是正确的？",
+      "options": [
+        "需要先初始化嵌入模型，再将文本转换为向量并添加进向量存储",
+        "InMemoryVectorStore 会自动下载并初始化嵌入模型",
+        "向量存储只能存储向量，不能存储对应的原始文本",
+        "添加文档时无需先对文本进行分割"
+      ],
+      "correct_option": 0,
+      "explanation": "源区块指出构建向量存储时，先通过初始化好的嵌入模型将文本转换为向量，再使用 InMemoryVectorStore 将向量及其原始文本添加进去，因此必须先初始化嵌入模型并转换文本。",
+      "source_hash": "1048e7ab298bd4d0ac4e61b54feacf00b65c8243e0d2b0b6701f444b12f47edd",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "    )\n    ```\n- **构建向量存储**: 将分割后的文本块 (`texts`) 通过初始化好的嵌入模型转换为向量表示，然后使用`InMemoryVectorStore`将这些向量及其对应的原始文本内容添加进去，从而在内存中构建出一个向量索引。\n    ```python\n    vectorstore = InMemoryVectorStore(embeddings)\n    vectorstore.add_documents(texts)\n    ```\n    这个过程完成后，便构建了一个可供查询的知识索引。\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q19",
+      "kb": "KB2",
+      "concept": "语义分割",
+      "question": "在语义分割中，每个像素的标签通常是什么形式？",
+      "options": [
+        "一个单独的类别索引或RGB颜色值",
+        "一个完整的图像分类结果",
+        "一个边界框坐标",
+        "一个关键点坐标"
+      ],
+      "correct_option": 0,
+      "explanation": "根据源码块bcf81011，代码通过voc_colormap2label函数构建从RGB颜色值到类别索引的映射，说明每个像素的标签是类别索引或对应的RGB颜色值，而不是边界框或关键点等。",
+      "source_hash": "fccb75feb73edcce1941eeaadfa7d75558c0877a876ec638c44a29fee77af3b7",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "semantic-segmentation-and-dataset.md",
+          "content": "               'potted plant', 'sheep', 'sofa', 'train', 'tv/monitor']\n```\n\n通过上面定义的两个常量，我们可以方便地[**查找标签中每个像素的类索引**]。\n我们定义了`voc_colormap2label`函数来构建从上述RGB颜色值到类别索引的映射，而`voc_label_indices`函数将RGB值映射到在Pascal VOC2012数据集中的类别索引。\n\n```"
+        }
+      ]
+    },
+    {
+      "id": "Q20",
+      "kb": "KB2",
+      "concept": "边界框",
+      "question": "在可视化边界框的代码中，label[0][1:5] * edge_size 的作用是什么？",
+      "options": [
+        "从标签中提取边界框坐标并将其乘以 edge_size 以转换为实际像素尺寸",
+        "从标签中提取类别信息并将其乘以 edge_size",
+        "将标签中的前5个元素相乘得到边界框的大小",
+        "从标签中提取图像的边缘尺寸"
+      ],
+      "correct_option": 0,
+      "explanation": "根据代码片段，label[0][1:5] 提取的是边界框的坐标信息（第1到第4个元素），乘以 edge_size 是为了将归一化坐标转换为实际像素尺寸，然后用于 show_bboxes 绘制边界框。",
+      "source_hash": "a432583987108a4164ec9902e5a1cfed85b1f15f75a7f7830824a1f83dacc6e2",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "object-detection-dataset_origin.md",
+          "content": "```{.python .input}\nimgs = (batch[0][0:10].transpose(0, 2, 3, 1)) / 255\naxes = d2l.show_images(imgs, 2, 5, scale=2)\nfor ax, label in zip(axes, batch[1][0:10]):\n    d2l.show_bboxes(ax, [label[0][1:5] * edge_size], colors=['w'])\n```\n\n```"
+        }
+      ]
+    },
+    {
+      "id": "Q21",
+      "kb": "KB2",
+      "concept": "边界框",
+      "question": "根据代码片段，当使用 bbox_to_rect 函数在图像上绘制边界框时，不同的颜色代表什么？",
+      "options": [
+        "代表不同的物体类别，如狗和猫",
+        "代表边界框的置信度",
+        "代表不同的数据集来源",
+        "代表不同的图像通道"
+      ],
+      "correct_option": 0,
+      "explanation": "根据代码片段，分别使用蓝色和红色为 dog_bbox 和 cat_bbox 添加边界框，说明不同颜色用于区分不同的物体类别。",
+      "source_hash": "a432583987108a4164ec9902e5a1cfed85b1f15f75a7f7830824a1f83dacc6e2",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "bounding-box_origin.md",
+          "content": "```{.python .input}\n#@tab all\nfig = d2l.plt.imshow(img)\nfig.axes.add_patch(bbox_to_rect(dog_bbox, 'blue'))\nfig.axes.add_patch(bbox_to_rect(cat_bbox, 'red'));\n```\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q22",
+      "kb": "KB1",
+      "concept": "RAG",
+      "question": "关于 LlamaIndex 在 RAG 方面的特点，以下哪项描述最符合资料内容？",
+      "options": [
+        "LlamaIndex 提供了更少封装好的 API 接口，增加了上手门槛",
+        "LlamaIndex 提供了更多封装好的 API 接口，降低了上手门槛",
+        "LlamaIndex 不提供任何封装好的 API 接口",
+        "LlamaIndex 只适用于低代码场景，无法完成复杂 RAG 应用"
+      ],
+      "correct_option": 1,
+      "explanation": "资料中说明 LlamaIndex 提供了更多封装好的 API 接口，这无疑降低了上手门槛，因此该选项符合资料内容。",
+      "source_hash": "ca7723f01d3faf3c640d840c17e44b86d53c77f6f44358e909772f322cc66792",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "## 四、低代码（基于LlamaIndex）\n\n在 RAG 方面，LlamaIndex 提供了更多封装好的 API 接口，这无疑降低了上手门槛，下面是一个简单实现：\n\n"
+        }
+      ]
+    },
+    {
+      "id": "Q23",
+      "kb": "KB1",
+      "concept": "RAG",
+      "question": "根据提供的资料，在四步构建 RAG 的过程中，可以用于实现第一个 RAG 应用的框架有哪些？",
+      "options": [
+        "只有 LangChain",
+        "只有 LlamaIndex",
+        "LangChain 和 LlamaIndex",
+        "TensorFlow 和 PyTorch"
+      ],
+      "correct_option": 2,
+      "explanation": "资料明确指出将尝试使用 LangChain 和 LlamaIndex 框架完成第一个 RAG 应用的实现与运行，因此这两个框架都可以用于实现 RAG 应用。",
+      "source_hash": "ca7723f01d3faf3c640d840c17e44b86d53c77f6f44358e909772f322cc66792",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "03_get_start_rag.md",
+          "content": "# 第三节 四步构建RAG\n\n通过第一节的学习，我们对RAG已经有了基本认识，并且也准备好了虚拟环境和api_key，接下来将尝试使用[**LangChain**](https://python.langchain.com/docs/introduction/)和[**LlamaIndex**](https://docs.llamaindex.ai/en/stable/)框架完成第一个RAG应用的实现与运行。通过一个示例，演示如何加载本地Markdown文档，利用嵌入模型处理文本，并结合大型语言模型（LLM）来回答与文档内容相关的问题。\n\n## 一、启动虚拟环境\n\n### 1.1 激活虚拟环境\n\n假设已经按照前一章节的指导，创建了名为 `all-in-rag`"
+        }
+      ]
+    },
+    {
+      "id": "Q24",
+      "kb": "KB2",
+      "concept": "边界框",
+      "question": "关于 box_center_to_corner 和 box_corner_to_center 函数，它们接受的 boxes 参数可以是哪两种形式？",
+      "options": [
+        "长度为4的一维张量，或形状为 (n, 4) 的二维张量",
+        "长度为2的一维张量，或形状为 (n, 2) 的二维张量",
+        "长度为4的列表，或形状为 (4, n) 的二维张量",
+        "形状为 (4, 4) 的二维张量，或长度为 n 的一维张量"
+      ],
+      "correct_option": 0,
+      "explanation": "根据源数据，输入参数 boxes 可以是长度为4的一维张量，或形状为 (n, 4) 的二维张量，其中 n 是边界框的数量。",
+      "source_hash": "a432583987108a4164ec9902e5a1cfed85b1f15f75a7f7830824a1f83dacc6e2",
+      "prompt_version": "knowledge-mri-mcq-v1",
+      "sources": [
+        {
+          "document": "bounding-box_origin.md",
+          "content": "and `box_center_to_corner` vice versa.\nThe input argument `boxes` can be either a tensor of length 4,\nor a two-dimensional tensor of shape ($n$, 4), where $n$ is the number of bounding boxes.\n\n"
+        }
+      ]
+    }
+  ]
+}

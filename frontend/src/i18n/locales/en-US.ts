@@ -2792,6 +2792,13 @@ export default {
       learningScanViewMap: 'View my knowledge map',
       learningScanFailed: 'Knowledge scan is unavailable',
       learningExport: 'Export learning data',
+      learningDisable: "Disable learning tracking",
+      learningDisableBody: "Stop recording learning activity in this knowledge base and return to the public graph. Existing data is retained. You can enable tracking again when opening your map.",
+      learningDisableDone: "Learning tracking disabled",
+      learningClear: "Clear my learning data",
+      learningClearBody: "Permanently delete your states, evidence, answers and scan progress in this knowledge base. This cannot be undone. Other users and the shared question bank are unaffected. Export first if needed. New activity will still be recorded.",
+      learningClearDone: "Your learning data in this knowledge base was cleared",
+
       emptyTitle: 'No wiki pages yet',
       emptyDesc: 'Upload documents with Wiki enabled to auto-generate knowledge pages',
       selectPageHint: 'Select a page from the left to view its content',

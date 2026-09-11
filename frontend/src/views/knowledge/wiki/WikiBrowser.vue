@@ -101,6 +101,16 @@
               <span class="legend-action-icon"><t-icon name="focus" /></span>
               <span>{{ $t('knowledgeEditor.wikiBrowser.fitView') || '适应屏幕' }}</span>
             </div>
+            <template v-if="graphDisplayMode === 'learning'">
+              <button type="button" class="legend-action learning-privacy-action" :disabled="learningPrivacyBusy || learningScanLoading || learningScanSubmitting" @click="confirmLearningPrivacyAction('disable')">
+                <span class="legend-action-icon"><t-icon name="pause-circle" /></span>
+                <span>{{ $t('knowledgeEditor.wikiBrowser.learningDisable') }}</span>
+              </button>
+              <button type="button" class="legend-action learning-privacy-action" :disabled="learningPrivacyBusy || learningScanLoading || learningScanSubmitting" @click="confirmLearningPrivacyAction('clear')">
+                <span class="legend-action-icon"><t-icon name="delete" /></span>
+                <span>{{ $t('knowledgeEditor.wikiBrowser.learningClear') }}</span>
+              </button>
+            </template>
             <div class="legend-action" @click="toggleArrows">
               <span class="legend-action-icon"><t-icon :name="showArrows ? 'browse-off' : 'browse'" /></span>
               <span>{{ showArrows ? $t('knowledgeEditor.wikiBrowser.hideArrows') :
@@ -927,6 +937,7 @@ import {
   completeLearningScan,
   getActiveLearningScan,
   setLearningTracking,
+  clearLearningProfile,
   startOrResumeLearningScan,
   startOrResumeLearningConceptScan,
   submitLearningQuizAttempt,
@@ -1139,6 +1150,55 @@ const learningScan = ref<LearningScan | null>(null)
 const learningScanSelectedOption = ref<number | null>(null)
 const learningScanKeys = new Map<string, string>()
 const learningExporting = ref(false)
+const learningPrivacyBusy = ref(false)
+
+function confirmLearningPrivacyAction(action: 'clear' | 'disable') {
+  if (learningPrivacyBusy.value || learningScanLoading.value || learningScanSubmitting.value) return
+  learningPrivacyBusy.value = true
+  const kbID = props.knowledgeBaseId
+  const prefix = action === 'clear' ? 'learningClear' : 'learningDisable'
+  let submitting = false
+  const dialog = DialogPlugin.confirm({
+    header: t(`knowledgeEditor.wikiBrowser.${prefix}`),
+    body: t(`knowledgeEditor.wikiBrowser.${prefix}Body`),
+    confirmBtn: t(`knowledgeEditor.wikiBrowser.${prefix}`),
+    cancelBtn: t('common.cancel'),
+    closeOnOverlayClick: false,
+    closeOnEscKeydown: false,
+    closeBtn: false,
+    onConfirm: async () => {
+      if (submitting) return
+      submitting = true
+      try {
+        if (action === 'clear') await clearLearningProfile(kbID)
+        else await setLearningTracking(kbID, false)
+        if (props.knowledgeBaseId === kbID) {
+          closeLearningScan()
+          learningScanKeys.clear()
+          graphDrawerVisible.value = false
+          graphDrawerInsights.value = null
+          learningOverlay.value = { tracking_enabled: action === 'clear', items: [] }
+          if (action === 'disable') activateGraphDisplayMode('knowledge')
+          else {
+            await fetchLearningOverlay()
+            renderGraph({ preserveLayout: true })
+          }
+        }
+        MessagePlugin.success(t(`knowledgeEditor.wikiBrowser.${prefix}Done`))
+      } catch (error: any) {
+        MessagePlugin.error(error?.message || t('knowledgeEditor.wikiBrowser.learningLoadFailed'))
+      } finally {
+        learningPrivacyBusy.value = false
+        dialog.destroy()
+      }
+    },
+    onCancel: () => {
+      if (submitting) return
+      learningPrivacyBusy.value = false
+      dialog.destroy()
+    },
+  })
+}
 
 async function downloadLearningExport() {
   if (learningExporting.value) return
@@ -1267,7 +1327,7 @@ function learningScanKey(scanID: string, itemID: string) {
 }
 
 async function openLearningScan(conceptKey?: string) {
-  if (learningScanLoading.value || learningScanSubmitting.value) return
+  if (learningScanLoading.value || learningScanSubmitting.value || learningPrivacyBusy.value) return
   learningScan.value = null
   learningScanVisible.value = true
   learningScanLoading.value = true
@@ -6936,6 +6996,16 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.learning-privacy-action {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .legend-action {

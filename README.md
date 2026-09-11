@@ -1,3 +1,8 @@
+> **犀牛鸟课题四：知识网络与引导式学习（Knowledge MRI）**
+> 本分支在 WeKnora Wiki 上增加个人知识地图、来源绑定测验、定向复测与画像管理。
+> [技术报告](docs/knowledge_mri/technical_report.pdf) · [运行与演示](docs/knowledge_mri/run_and_demo.md) · [评估结果与原始材料](docs/knowledge_mri/evaluation.md)
+> 最终成果标签：`rhino-2026-final-4`。请从源码构建；上游预编译镜像不包含本课题改动。
+
 <p align="center">
   <picture>
     <img src="./docs/images/logo.png" alt="WeKnora Logo" height="120"/>
@@ -40,7 +45,7 @@
   <h4 align="center">
 
   [Overview](#-overview) • [Architecture](#-architecture) • [Key Features](#-key-features) • [Getting Started](#-getting-started) • [API Reference](#-api-reference) • [Developer Guide](#-developer-guide)
-  
+
   </h4>
 </p>
 

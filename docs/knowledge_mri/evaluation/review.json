@@ -1,0 +1,356 @@
+{
+  "reviewer": "Codex assistant source-based audit, 2026-09-10; author-side AI review, no independent human labels",
+  "rubric": {
+    "supported": "yes means the isolated chunk supports at least one substantive concept property, not necessarily its entire summary; uncertain is not a pass",
+    "grounded": "keyed answer and explanation supported by supplied frozen sources, not independently verified external truth",
+    "unique_answer": "one unambiguous answer under the exact question wording",
+    "concept_relevant": "measures the concept or its specific implementation, not incidental environment or generic interface trivia",
+    "nonduplicate": "no equivalent question/answer fact elsewhere in the 24-item bank; both members of a duplicate pair fail"
+  },
+  "mappings": [
+    {
+      "id": "M01",
+      "supported": "yes",
+      "reason": "明确给出创建和激活虚拟环境命令。"
+    },
+    {
+      "id": "M02",
+      "supported": "no",
+      "reason": "只列举查询转换名称，没有说明其机制或多角度召回作用。"
+    },
+    {
+      "id": "M03",
+      "supported": "uncertain",
+      "reason": "仅有编辑器退出和加载 bashrc，缺少变量名及密钥设置上下文。"
+    },
+    {
+      "id": "M04",
+      "supported": "uncertain",
+      "reason": "表格行被截断，缺少列标题，无法独立确认属性属于模块化 RAG。"
+    },
+    {
+      "id": "M05",
+      "supported": "yes",
+      "reason": "给出 context/question 占位符及基于上下文回答的完整模板。"
+    },
+    {
+      "id": "M06",
+      "supported": "yes",
+      "reason": "明确把检索相关性定义为找到的内容是否包含答案。"
+    },
+    {
+      "id": "M07",
+      "supported": "yes",
+      "reason": "明确列出 RAG 最小系统四个阶段和 LangChain 实现关系。"
+    },
+    {
+      "id": "M08",
+      "supported": "yes",
+      "reason": "明确指出 RAG 将内部参数化知识与外部非参数化知识结合，支持来源区别但不支持全部摘要细节。"
+    },
+    {
+      "id": "M09",
+      "supported": "no",
+      "reason": "专家路由与融合的泛化比喻不足以支持多路检索结果融合。"
+    },
+    {
+      "id": "M10",
+      "supported": "yes",
+      "reason": "明确说明微调改变模型参数及三种技术的选型顺序。"
+    },
+    {
+      "id": "M11",
+      "supported": "uncertain",
+      "reason": "只有表格末行，缺少列标题，无法确认系统复杂性高对应哪个类别。"
+    },
+    {
+      "id": "M12",
+      "supported": "yes",
+      "reason": "明确说明多模态扩展支持图像和表格检索。"
+    },
+    {
+      "id": "M13",
+      "supported": "no",
+      "reason": "仅依赖安装命令，不足以说明虚拟环境的创建与激活。"
+    },
+    {
+      "id": "M14",
+      "supported": "yes",
+      "reason": "明确说明错误检索会导致模型生成错误答案，支持幻觉的具体失败情形。"
+    },
+    {
+      "id": "M15",
+      "supported": "uncertain",
+      "reason": "出现 Rerank 名称，但缺少重排操作解释及表头。"
+    },
+    {
+      "id": "M16",
+      "supported": "yes",
+      "reason": "说明合成图像保留内容图像的风景、物体及内容特征。"
+    },
+    {
+      "id": "M17",
+      "supported": "no",
+      "reason": "仅训练集和测试集规模及品种列表，没有验证集划分或目录组织方法。"
+    },
+    {
+      "id": "M18",
+      "supported": "yes",
+      "reason": "明确说明转置卷积可初始化为双线性插值上采样；不支持插值计算公式。"
+    },
+    {
+      "id": "M19",
+      "supported": "uncertain",
+      "reason": "代码尾部只拼接预测结果，缺少函数名及非极大值抑制上下文。"
+    },
+    {
+      "id": "M20",
+      "supported": "yes",
+      "reason": "明确说明剩余锚框按阈值分配真实边界框，给出标注算法步骤。"
+    },
+    {
+      "id": "M21",
+      "supported": "uncertain",
+      "reason": "仅调用 cls_predictor，没有其层定义，无法确认卷积结构和复杂度。"
+    },
+    {
+      "id": "M22",
+      "supported": "yes",
+      "reason": "明确说明随机图像增广及多次变换的演示方法。"
+    },
+    {
+      "id": "M23",
+      "supported": "yes",
+      "reason": "明确说明 IoU 用来衡量锚框和真实框的相似度，但片段不包含比值公式。"
+    },
+    {
+      "id": "M24",
+      "supported": "yes",
+      "reason": "明确说明目标模型新增输出层，其维度取目标数据集类别数。"
+    },
+    {
+      "id": "M25",
+      "supported": "yes",
+      "reason": "明确说明内容层取 VGG 靠近输出的层及其作用。"
+    },
+    {
+      "id": "M26",
+      "supported": "uncertain",
+      "reason": "代码可推测是在输出预测类别，但独立片段没有任务名称与类别定义。"
+    },
+    {
+      "id": "M27",
+      "supported": "yes",
+      "reason": "明确说明多尺度特征图、物体大小及锚框尺度的关系。"
+    },
+    {
+      "id": "M28",
+      "supported": "yes",
+      "reason": "明确给出实例分割定义及两只狗的区分示例。"
+    },
+    {
+      "id": "M29",
+      "supported": "uncertain",
+      "reason": "冻结特征参数的练习题，缺少基础微调定义，不能独立说明常规训练策略。"
+    },
+    {
+      "id": "M30",
+      "supported": "yes",
+      "reason": "明确给出 Gram 矩阵 XX^T 及元素内积定义。"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "Q01",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文明确给出 keep_separator=True；考查分块配置，不证明迁移应用能力。"
+    },
+    {
+      "id": "Q02",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "源码和文字均说明预测类别映射回颜色，选项可区分。"
+    },
+    {
+      "id": "Q03",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文明确说明保持语义完整性的目的；与 Q17 同段但分别考目的和顺序。"
+    },
+    {
+      "id": "Q04",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "no",
+      "nonduplicate": "yes",
+      "reason": "答案有来源且唯一，但虚拟环境名称不能有效衡量 RAG 概念理解。"
+    },
+    {
+      "id": "Q05",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "no",
+      "reason": "原文支持边界框标签差异；与 Q14 跨 Concept 实质重复，二者均记重复。"
+    },
+    {
+      "id": "Q06",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "代码明确 embed_model 的设置；属于概念相关实现细节。"
+    },
+    {
+      "id": "Q07",
+      "grounded": "uncertain",
+      "unique_answer": "uncertain",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "来源说的是一个小批量标签为三维；题干省略 batch 限定，单样本可为二维，答案有歧义。"
+    },
+    {
+      "id": "Q08",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文明确列出四个步骤；限于该教程命名，不解释为所有 RAG 的唯一流程。"
+    },
+    {
+      "id": "Q09",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文明确文本转向量；与 Q18 同段但后者考操作顺序，保留为不同考点。"
+    },
+    {
+      "id": "Q10",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "两条来源共同支持新增 FCN；与 Q15 分别考结构和标注，未视为完全重复。"
+    },
+    {
+      "id": "Q11",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "来源明确用联合训练 RPN 替代选择性搜索。"
+    },
+    {
+      "id": "Q12",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "来源完整给出两个默认参数；结论只对冻结教程文本，不代表最新库版本。"
+    },
+    {
+      "id": "Q13",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "源代码明确 normalize_embeddings=True。"
+    },
+    {
+      "id": "Q14",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "no",
+      "reason": "原文支持，但与 Q05 是同一标签差异考点；跨概念重复也计入缺陷。"
+    },
+    {
+      "id": "Q15",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文支持像素级标注；选项中只有 A 含该信息。"
+    },
+    {
+      "id": "Q16",
+      "grounded": "yes",
+      "unique_answer": "uncertain",
+      "concept_relevant": "no",
+      "nonduplicate": "yes",
+      "reason": "代码直接返回 len(features)，但配对数据中标签数也可能相同；独立片段不足以排除 B，且只是通用 Dataset 接口细节。"
+    },
+    {
+      "id": "Q17",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文给出段落、行、空格、字符顺序；与 Q03 考察维度不同。"
+    },
+    {
+      "id": "Q18",
+      "grounded": "yes",
+      "unique_answer": "uncertain",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文支持初始化和索引流程，但 D 的“无需先分割”并非普遍错误，题干缺少“本教程流程”限定。"
+    },
+    {
+      "id": "Q19",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "原文明确 RGB 标签和类别索引映射，符合像素分类任务。"
+    },
+    {
+      "id": "Q20",
+      "grounded": "uncertain",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "代码支持提取坐标和缩放，但片段缺少归一化定义与 edge_size 定义，无法独立确认像素尺度解释。"
+    },
+    {
+      "id": "Q21",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "题干限定该代码片段，狗与猫分别用蓝和红表示；不得泛化为函数自动按类别配色。"
+    },
+    {
+      "id": "Q22",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "no",
+      "nonduplicate": "yes",
+      "reason": "封装 API 多少属于工具易用性描述，虽然有来源，但难作为 RAG 核心原理的掌握证据。"
+    },
+    {
+      "id": "Q23",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "资料明确给出两框架，属于 RAG 实现工具的基本识别；测量深度有限。"
+    },
+    {
+      "id": "Q24",
+      "grounded": "yes",
+      "unique_answer": "yes",
+      "concept_relevant": "yes",
+      "nonduplicate": "yes",
+      "reason": "源文本明确声称两种输入形式；本审查仅校对资料，没有验证对应库函数是否实际支持一维。"
+    }
+  ]
+}

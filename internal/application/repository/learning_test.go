@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -12,6 +13,42 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+func TestLearningExportExcludesOtherScopesAndAnswerKeys(t *testing.T) {
+	repo, db := newLearningTestRepository(t)
+	ctx := context.Background()
+	scopes := []interfaces.LearningScope{
+		{TenantID: 1, SubjectID: "web_user:a", KnowledgeBaseID: "kb-a"},
+		{TenantID: 1, SubjectID: "web_user:b", KnowledgeBaseID: "kb-a"},
+		{TenantID: 2, SubjectID: "web_user:a", KnowledgeBaseID: "kb-a"},
+		{TenantID: 1, SubjectID: "web_user:a", KnowledgeBaseID: "kb-b"},
+	}
+	for i, scope := range scopes {
+		id := fmt.Sprintf("export-%d", i)
+		require.NoError(t, db.Create(&types.UserConceptState{ID: id, TenantID: scope.TenantID, SubjectID: scope.SubjectID, KnowledgeBaseID: scope.KnowledgeBaseID, ConceptKey: id}).Error)
+		require.NoError(t, db.Create(&types.LearningEvidence{ID: id, TenantID: scope.TenantID, SubjectID: scope.SubjectID, KnowledgeBaseID: scope.KnowledgeBaseID, ConceptKey: id, IdempotencyKey: id}).Error)
+		require.NoError(t, db.Create(&types.QuizAttempt{ID: id, TenantID: scope.TenantID, SubjectID: scope.SubjectID, KnowledgeBaseID: scope.KnowledgeBaseID, ConceptKey: id, IdempotencyKey: id}).Error)
+	}
+	for i, scope := range []interfaces.LearningScope{scopes[0], scopes[2], scopes[3]} {
+		require.NoError(t, db.Create(&types.QuizItem{ID: fmt.Sprintf("item-%d", i), TenantID: scope.TenantID, KnowledgeBaseID: scope.KnowledgeBaseID, ConceptKey: "concept", Question: "question", Options: types.StringArray{"a", "b", "c", "d"}, CorrectOption: 2, Explanation: "private-answer-explanation"}).Error)
+	}
+	exported, err := repo.ExportScope(ctx, scopes[0])
+	require.NoError(t, err)
+	require.Len(t, exported.ConceptStates, 1)
+	require.Len(t, exported.Evidence, 1)
+	require.Len(t, exported.QuizAttempts, 1)
+	require.Len(t, exported.QuizItems, 1)
+	require.Equal(t, "export-0", exported.ConceptStates[0].ID)
+	require.Equal(t, "export-0", exported.Evidence[0].ID)
+	require.Equal(t, "export-0", exported.QuizAttempts[0].ID)
+	require.Equal(t, "item-0", exported.QuizItems[0].ID)
+	encoded, err := json.Marshal(exported)
+	require.NoError(t, err)
+	require.NotContains(t, string(encoded), "correct_option")
+	require.NotContains(t, string(encoded), "private-answer-explanation")
+	_, err = repo.ExportScope(ctx, interfaces.LearningScope{})
+	require.ErrorIs(t, err, ErrInvalidLearningScope)
+}
 
 func newLearningTestRepository(t *testing.T) (interfaces.LearningRepository, *gorm.DB) {
 	t.Helper()
