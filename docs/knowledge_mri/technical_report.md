@@ -161,9 +161,20 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 仓库还保留了四张界面状态图，用于补足主报告两张实时验收截图：
 
-- [知识图谱 / 我的知识地图切换](screenshots/phase5_breadcrumb_mode_dropdown.png)：证明公共图谱和个人学习地图是可切换的视图。
-- [普通知识图谱](screenshots/phase5_ordinary_graph.png)：显示公共节点和图谱图例。
-- [个人知识地图](screenshots/phase5_personal_map.png)：显示学习状态颜色图例和个人 overlay。
-- [节点学习抽屉](screenshots/phase5_learning_drawer.png)：显示状态、掌握比例、证据和“验证掌握程度”入口。
+![知识图谱 / 我的知识地图切换](screenshots/phase5_breadcrumb_mode_dropdown.png)
+
+图 3：知识图谱 / 我的知识地图切换菜单。
+
+![普通知识图谱](screenshots/phase5_ordinary_graph.png)
+
+图 4：公共知识图谱和图谱图例。
+
+![个人知识地图](screenshots/phase5_personal_map.png)
+
+图 5：个人学习状态颜色图例和 overlay。
+
+![节点学习抽屉](screenshots/phase5_learning_drawer.png)
+
+图 6：节点状态、掌握比例、证据和“验证掌握程度”入口。
 
 主报告的两张新截图分别展示了重新打开后的证据抽屉和当前知识点 `1 / 2` 定向复测。快速扫描 `1 / 6`、导出和画像清除确认框的交互路径已在 [run_and_demo.md](run_and_demo.md) 和实时验收记录中说明；后续若重新录制演示，建议优先补这三张动态截图。
