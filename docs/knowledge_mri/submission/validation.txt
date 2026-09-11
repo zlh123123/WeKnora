@@ -19,3 +19,5 @@ Final privacy UI addition: npm test 441/441; npm run type-check PASS; npm run bu
 Local frontend Docker image rebuilt and restarted; app and user data were not replaced.
 Browser privacy check: both new buttons visible; clear dialog states irreversible, caller/KB scope and retained tracking. No clear request was confirmed.
 Final packaging: 2026-09-11.
+
+Added four historical interface screenshots to the report appendix and added benchmark_plan.md covering A-E evaluation layers.
