@@ -7,7 +7,7 @@
 我是张凌浩（GitHub ID：zlh123123），提交课题四“知识网络与引导式学习”的代码类成果。
 
 成果链接：https://github.com/zlh123123/WeKnora
-代码版本：Tag `rhino-2026-final-4-r3`；Commit `128d3b39`
+代码版本：Tag `rhino-2026-final-4-r4`；Commit `044969e9c12054d14a9d1f03c1c365205c536c81`
 
 提交材料：
 - 技术报告 PDF：仓库 `docs/knowledge_mri/technical_report.pdf`（同时附 PDF）
