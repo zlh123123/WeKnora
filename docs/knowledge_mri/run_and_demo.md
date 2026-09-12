@@ -13,7 +13,7 @@
 ```bash
 git clone https://github.com/zlh123123/WeKnora.git
 cd WeKnora
-git checkout rhino-2026-final-4
+git checkout rhino-2026-final-4-r6
 cp .env.example .env
 ```
 
