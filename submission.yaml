@@ -11,8 +11,8 @@ result:
 repository:
   url: "https://github.com/zlh123123/WeKnora"
   branch: "main"
-  commit: "044969e9c12054d14a9d1f03c1c365205c536c81"
-  tag: "rhino-2026-final-4-r4"
+  commit: "c365711a57ac3199d83dbe1bcdc2faa298a310f8"
+  tag: "rhino-2026-final-4-r5"
 artifacts:
   technical_report_pdf: "docs/knowledge_mri/technical_report.pdf"
   technical_report_markdown: "docs/knowledge_mri/technical_report.md"
