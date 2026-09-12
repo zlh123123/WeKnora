@@ -1,0 +1,15 @@
+version: 1
+student:
+  name: "张凌浩"
+  github_id: "zlh123123"
+topic:
+  id: "课题四"
+  title: "知识网络与引导式学习"
+result:
+  type: code
+  url: "https://github.com/zlh123123/WeKnora"
+repository:
+  url: "https://github.com/zlh123123/WeKnora.git"
+  branch: "main"
+  commit: "e2d110c5ffb29813c5180042b510331eb223c60f"
+  tag: "rhino-2026-final-4-r6"
