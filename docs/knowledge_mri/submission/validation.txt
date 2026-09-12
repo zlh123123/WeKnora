@@ -20,4 +20,4 @@ Local frontend Docker image rebuilt and restarted; app and user data were not re
 Browser privacy check: both new buttons visible; clear dialog states irreversible, caller/KB scope and retained tracking. No clear request was confirmed.
 Final packaging: 2026-09-11.
 
-Added four historical interface screenshots to the report appendix and added benchmark_plan.md covering A-E evaluation layers.
+Replaced the appendix screenshots with the user recapture set from 2026-09-12. Five source images are preserved under submission/screenshots-2026-09-12/ at 1490×1196 to 3240×1728; the six report display positions remain intact.

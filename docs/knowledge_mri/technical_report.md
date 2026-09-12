@@ -149,41 +149,41 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 ## 附录：界面展示
 
-本附录完整展示 6 张界面图。图 1–4 来自阶段验收，图 5–6 来自 2026-09-10 的最新实时验收。阶段截图分辨率较低，但保留了完整交互状态；最新截图为 1200×770。
+本附录完整展示 6 个界面展示位。本次统一替换为 2026-09-12 重新截取的高清图，原始分辨率均高于此前版本；图 5 使用同一轮验收中的节点学习抽屉截图，突出个人地图中的证据查看状态。
 
 ### 图 1：知识图谱 / 我的知识地图切换
 
-![知识图谱与我的知识地图切换](screenshots/phase5_breadcrumb_mode_dropdown.png)
+![知识图谱与我的知识地图切换](submission/screenshots-2026-09-12/knowledge-map-switch.png)
 
 该图展示公共知识图谱和个人知识地图的切换入口。
 
 ### 图 2：普通知识图谱
 
-![普通知识图谱](screenshots/phase5_ordinary_graph.png)
+![普通知识图谱](submission/screenshots-2026-09-12/ordinary-graph.png)
 
 该图展示公共知识图谱、节点关系和图谱图例。
 
 ### 图 3：个人知识地图
 
-![个人知识地图](screenshots/phase5_personal_map.png)
+![个人知识地图](submission/screenshots-2026-09-12/personal-map.png)
 
 该图展示个人学习状态颜色图例和知识网络 overlay。
 
 ### 图 4：节点学习抽屉
 
-![节点学习抽屉](screenshots/phase5_learning_drawer.png)
+![节点学习抽屉](submission/screenshots-2026-09-12/learning-drawer.png)
 
 该图展示节点状态、掌握比例、证据时间线和“验证掌握程度”入口。
 
 ### 图 5：最新个人地图与证据抽屉
 
-![个人地图与证据抽屉](submission/map-evidence-2026-09-10.png)
+![个人地图与证据抽屉](submission/screenshots-2026-09-12/learning-drawer.png)
 
-2026-09-10 重新打开本机页面后的真实状态。RAG 节点保留既有验证结果和证据时间线。
+本次重新打开本机页面后的真实状态。RAG 节点保留既有验证结果和证据时间线。
 
 ### 图 6：最新两题定向复测
 
-![两题定向复测](submission/targeted-retest-2026-09-10.png)
+![两题定向复测](submission/screenshots-2026-09-12/targeted-retest.png)
 
 从当前节点进入两题复测，显示 1/2。该图证明交互入口和题目恢复流程可用，不代表其中题目已经通过质量审核。
 
