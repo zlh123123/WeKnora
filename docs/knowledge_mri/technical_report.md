@@ -95,7 +95,7 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 个人地图现提供停用、清除按钮及确认说明，无需手工调用接口。清除删除当前用户范围内状态、证据、作答与扫描，并记录 cleared_at 防止迟到事件恢复旧数据；不会删除其他人的记录或公共题库。停用后拒绝新增追踪和答题写入。KB/租户删除入口包含学习表清理，但生产 PostgreSQL 的全部删除、权限撤销及并发场景未做完整端到端验收。
 
-离线审核材料仅导出公开教材片段和生成题，不包含用户画像、账户、聊天或模型密钥。其题目答案为评审复核用途，与产品答题接口分离。语料署名与许可证见 evaluation/README.md。
+离线审核材料仅导出公开教材片段和生成题，不包含用户画像、账户、聊天或模型密钥。其题目答案为评审复核用途，与产品答题接口分离。评估复现方式见 [benchmark_plan.md](evaluation/benchmark_plan.md)。
 
 ## 7. 工程验证
 
@@ -103,7 +103,7 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 2026-09-10，本机 Docker + PostgreSQL + Edge 在“测试wiki”完成真实定向复测：题量 1/2，提交后 2/2，关闭恢复第二题，完成后 strong 1。数据库保存 completed/current_index=2/total_items=2，抽屉出现两条新证据；原六题扫描仍为 pending/current_index=0/total_items=6。该操作用于功能验收，答案由验收过程选择，不构成学习效果样本。
 
-详细记录见 retest_checkpoint_2026-09-10.md。全新机器安装、独立新用户完整旅程、所有模型失败恢复和多实例并发仍未完整验收，应与已验证路径区分。
+全新机器安装、独立新用户完整旅程、所有模型失败恢复和多实例并发仍未完整验收，应与已验证路径区分。
 
 ## 8. 真实数据评估
 
@@ -128,7 +128,7 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 验证规则并非在所有设定中优于 Exposure。两题时乘 confidence 甚至弱于常数基线，因此本报告不把该乘积视为校准后的成功概率。两题被判 strong 的合成个体中，50.2% 的 latent p 低于 0.8，说明轻量验证存在明显测量不确定性。Laplace 平滑对照表现更好，但尚未实现进产品，也不能由合成结果直接确定真实最优规则。
 
-完整九组结果见 evaluation.md。旧版本仅使用独立 Exposure 的 500 样本结果保留作历史记录，不再单独用来支持有效性提升。
+评估方案和结果解释边界见 evaluation/benchmark_plan.md。不把合成结果或个人演示操作当作真实用户研究结果。
 
 ## 10. 结论与下一步
 
@@ -138,12 +138,11 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 ## 11. 交付与复现索引
 
-- 代码：GitHub zlh123123/WeKnora，标签 rhino-2026-final-4-r3；完整 SHA 见标签及 submission.yaml。
-- 技术说明：technical_report.md / technical_report.pdf。
+- 代码：GitHub zlh123123/WeKnora，提交版本以仓库当前分支为准。
+- 技术说明：technical_report.md。
 - 运行与演示：run_and_demo.md；原创短材料 demo/rag_demo.md。
-- 评估：evaluation.md、evaluation/ 下冻结来源、标签和数值。
+- 评估：evaluation/benchmark_plan.md。
 - 脚本：scripts/knowledge_mri_audit.py、scripts/knowledge_mri_sensitivity.py。
-- 验收：retest_checkpoint_2026-09-10.md、submission/validation.txt。
 
 复算只需要 Python 3 标准库；交互原型还需要 Docker、可用模型和知识库资料。运行说明明确了源码构建方式和已验证环境。没有附带真实用户数据或服务密钥。
 
@@ -153,37 +152,37 @@ State + 公共 Graph -> 个人地图 / 证据抽屉 / 规则推荐
 
 ### 图 1：知识图谱 / 我的知识地图切换
 
-![知识图谱与我的知识地图切换](submission/screenshots-2026-09-12/knowledge-map-switch.png)
+![知识图谱与我的知识地图切换](screenshots/knowledge-map-switch.png)
 
 该图展示公共知识图谱和个人知识地图的切换入口。
 
 ### 图 2：普通知识图谱
 
-![普通知识图谱](submission/screenshots-2026-09-12/ordinary-graph.png)
+![普通知识图谱](screenshots/ordinary-graph.png)
 
 该图展示公共知识图谱、节点关系和图谱图例。
 
 ### 图 3：个人知识地图
 
-![个人知识地图](submission/screenshots-2026-09-12/personal-map.png)
+![个人知识地图](screenshots/personal-map.png)
 
 该图展示个人学习状态颜色图例和知识网络 overlay。
 
 ### 图 4：节点学习抽屉
 
-![节点学习抽屉](submission/screenshots-2026-09-12/learning-drawer.png)
+![节点学习抽屉](screenshots/learning-drawer.png)
 
 该图展示节点状态、掌握比例、证据时间线和“验证掌握程度”入口。
 
 ### 图 5：最新个人地图与证据抽屉
 
-![个人地图与证据抽屉](submission/screenshots-2026-09-12/learning-drawer.png)
+![个人地图与证据抽屉](screenshots/learning-drawer.png)
 
 本次重新打开本机页面后的真实状态。RAG 节点保留既有验证结果和证据时间线。
 
 ### 图 6：最新两题定向复测
 
-![两题定向复测](submission/screenshots-2026-09-12/targeted-retest.png)
+![两题定向复测](screenshots/targeted-retest.png)
 
 从当前节点进入两题复测，显示 1/2。该图证明交互入口和题目恢复流程可用，不代表其中题目已经通过质量审核。
 

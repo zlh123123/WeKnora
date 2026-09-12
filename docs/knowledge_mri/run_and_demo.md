@@ -1,10 +1,10 @@
 # 运行与演示
 
-课题四 / 张凌浩（zlh123123）/ 最终版本 `rhino-2026-final-4`。
+课题四 / 张凌浩（zlh123123）。
 
 ## 1. 最快检查成果：离线复算
 
-无需登录、无需模型、无需导入资料。在仓库根目录按 [evaluation/README.md](evaluation/README.md) 执行两条 Python 命令，即可重现审核计数与合成实验。阅读 [technical_report.pdf](technical_report.pdf) 了解设计和结论。
+无需登录、无需模型、无需导入资料。评估指标、数据来源和复现边界见 [evaluation/benchmark_plan.md](evaluation/benchmark_plan.md)。阅读 [technical_report.md](technical_report.md) 了解设计和结论。
 
 ## 2. 从源码启动交互原型
 
@@ -49,7 +49,7 @@ curl --fail http://localhost:8080/health
 - 1:20–1:40：说明推荐是规则排序的下一步巩固建议，不是完整先修路径。
 - 1:40–2:00：展示报告中的真实审核结果和局限，以及画像导出/清除入口。
 
-该脚本是演示讲解提纲，不是已录制视频。浏览器验收记录见 [retest_checkpoint_2026-09-10.md](retest_checkpoint_2026-09-10.md)。
+该脚本是演示讲解提纲，不是已录制视频。
 
 ## 5. 回归命令
 
